@@ -8,6 +8,7 @@ export const Pomodoro = () => {
   const [customMinutes, setCustomMinutes] = useState(25);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
+  const [endTime, setEndTime] = useState(null);
   const [manualMinutes, setManualMinutes] = useState('');
 
   // Sincroniza o dropdown se os projetos mudarem
@@ -17,29 +18,69 @@ export const Pomodoro = () => {
     }
   }, [projects, selectedProjectId]);
 
+  const playBeep = (freq = 440, type = 'sine') => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 1);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 1);
+    } catch (e) { console.error("Audio error", e); }
+  };
+
   useEffect(() => {
     if (!isActive) {
       setTimeLeft(customMinutes * 60);
+      setEndTime(null);
+    } else if (isActive && !endTime) {
+      // O timer acabou de ser iniciado
+      setEndTime(Date.now() + timeLeft * 1000);
+      playBeep(600, 'triangle');
     }
-  }, [customMinutes, isActive]);
+  }, [customMinutes, isActive, endTime, timeLeft]);
 
   useEffect(() => {
     let interval = null;
-    if (isActive && timeLeft > 0) {
+    if (isActive && endTime) {
       interval = setInterval(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-    } else if (isActive && timeLeft === 0) {
-      setIsActive(false);
-      logTime(selectedProjectId, customMinutes);
-      setTimeLeft(customMinutes * 60);
+        const now = Date.now();
+        const diff = Math.round((endTime - now) / 1000);
+        
+        if (diff <= 0) {
+          setIsActive(false);
+          setEndTime(null);
+          setTimeLeft(0);
+          logTime(selectedProjectId, customMinutes);
+          
+          playBeep(800, 'square');
+          setTimeout(() => playBeep(800, 'square'), 200);
+          
+          setTimeout(() => setTimeLeft(customMinutes * 60), 1000);
+        } else {
+          setTimeLeft(diff);
+        }
+      }, 500); // 500ms para atualizar mais rápido e ser imune ao "sleep" da aba
     }
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, customMinutes, selectedProjectId, logTime]);
+  }, [isActive, endTime, customMinutes, selectedProjectId, logTime]);
 
-  const toggle = () => setIsActive(!isActive);
+  const toggle = () => {
+    if (!isActive && timeLeft !== customMinutes * 60 && !endTime) {
+       // Retomando de pause
+       setEndTime(Date.now() + timeLeft * 1000);
+    }
+    setIsActive(!isActive);
+  };
+  
   const reset = () => {
     setIsActive(false);
+    setEndTime(null);
     setTimeLeft(customMinutes * 60);
   };
 
@@ -53,7 +94,6 @@ export const Pomodoro = () => {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   
-  // Calcula o tempo de hoje para o projeto selecionado
   const todayStr = new Date().toISOString().split('T')[0];
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const dailyGoal = selectedProject?.dailyGoal || 30;
@@ -88,7 +128,11 @@ export const Pomodoro = () => {
         <input 
           type="number" 
           value={customMinutes} 
-          onChange={(e) => setCustomMinutes(Math.max(1, parseInt(e.target.value) || 1))}
+          onChange={(e) => {
+            const val = Math.max(1, parseInt(e.target.value) || 1);
+            setCustomMinutes(val);
+            if(!isActive) setTimeLeft(val * 60);
+          }}
           className="time-input"
           disabled={isActive}
           min="1"

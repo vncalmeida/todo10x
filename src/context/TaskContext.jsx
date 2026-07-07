@@ -165,6 +165,23 @@ export const TaskProvider = ({ children }) => {
           addTask(projectId, action.title, action.targetDate);
         }
       }
+      else if (action.type === 'LOG_PAST_TASK') {
+        let projectId = action.projectId;
+        if (!projectId && action.projectName) {
+          let proj = newProjects.find(p => p.name.toLowerCase() === action.projectName.toLowerCase());
+          if (!proj) {
+            proj = { id: Date.now().toString() + Math.random(), name: action.projectName, progress: 0, dailyGoal: 30 };
+            newProjects.push(proj);
+          }
+          projectId = proj.id;
+        }
+        
+        if (projectId) {
+          const newTask = addTask(projectId, action.title, action.targetDate);
+          // Mark as completed immediately
+          setTasks(prev => prev.map(t => t.id === newTask.id ? { ...t, completed: true } : t));
+        }
+      }
       else if (action.type === 'COMPLETE_TASK') {
         const matchingTask = tasks.find(t => 
           !t.completed && t.title.toLowerCase().includes(action.keyword.toLowerCase())
