@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
-import { BrainCircuit, Plus, Circle } from 'lucide-react';
+import { BrainCircuit, Plus, Circle, History } from 'lucide-react';
 import { StreakCalendar } from '../components/StreakCalendar';
 import { HoursChart } from '../components/HoursChart';
 import { MoodTracker } from '../components/MoodTracker';
@@ -20,11 +20,14 @@ export const Home = () => {
       
       <header className="header glass-panel">
         <div className="logo">
-          <BrainCircuit className="logo-icon" size={32} />
+          <BrainCircuit className="logo-icon" size={32} color="var(--accent-primary)" />
           <h1 className="text-gradient">AI Engagement</h1>
         </div>
-        <div className="header-stats">
-          <span style={{ textTransform: 'capitalize' }}>
+        <div className="header-stats" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button className="btn-small" onClick={() => navigate('/history')}>
+            <History size={16} /> Diário Global
+          </button>
+          <span style={{ textTransform: 'capitalize', color: 'var(--text-secondary)' }}>
             {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </span>
         </div>
@@ -34,16 +37,8 @@ export const Home = () => {
         <div className="layout-grid">
           <div className="left-column">
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <StreakCalendar />
-                <MoodTracker />
-              </div>
-              <HoursChart />
-            </div>
-            
-            <section className="projects-section">
-              <div className="section-header">
+            <section className="projects-section" style={{ marginBottom: '2.5rem' }}>
+              <div className="section-header" style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <h2>Projetos & Metas</h2>
                   <button className="btn-small" onClick={() => setIsCreatingProject(true)}>
@@ -54,10 +49,10 @@ export const Home = () => {
               
               <div className="projects-grid">
                 {projects.map(project => (
-                  <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)} style={{ transition: 'all 0.2s', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)}>
                     <h3 style={{ marginBottom: project.description ? '0.5rem' : '1rem' }}>{project.name}</h3>
                     {project.description && (
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {project.description}
                       </p>
                     )}
@@ -67,17 +62,25 @@ export const Home = () => {
                   </div>
                 ))}
                 {projects.length === 0 && (
-                  <p style={{ color: 'var(--text-secondary)' }}>Nenhum projeto ativo.</p>
+                  <p style={{ color: 'var(--text-secondary)' }}>Nenhum projeto ativo. Crie um para começar!</p>
                 )}
               </div>
             </section>
 
-            <section className="tasks-section" style={{ marginTop: '2rem' }}>
-              <h2>Próximos Passos (Tarefas)</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <StreakCalendar />
+                <MoodTracker />
+              </div>
+              <HoursChart />
+            </div>
+
+            <section className="tasks-section" style={{ paddingBottom: '5rem' }}>
+              <h2>Próximos Passos (Sugestões Aprovadas)</h2>
               <div className="task-list" style={{ marginTop: '1rem' }}>
                 {tasks.filter(t => !t.completed).length === 0 ? (
                   <p style={{ color: 'var(--text-secondary)', padding: '1rem', background: 'var(--glass-bg)', borderRadius: '12px' }}>
-                    Nenhuma tarefa pendente! Que tal focar em uma meta no chat?
+                    Nenhuma pendência! Peça ideias para a IA no chat flutuante.
                   </p>
                 ) : (
                   tasks.filter(t => !t.completed).map(task => {
@@ -105,12 +108,13 @@ export const Home = () => {
 
           </div>
           
-          <div className="right-column" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <ChatPanel />
+          <div className="right-column">
             <Pomodoro />
           </div>
         </div>
       </main>
+
+      <ChatPanel />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useTaskContext } from './context/TaskContext';
 import { BrainCircuit } from 'lucide-react';
 import { Home } from './pages/Home';
 import { ProjectPage } from './pages/ProjectPage';
+import { GlobalHistory } from './pages/GlobalHistory';
 import './App.css';
 
 function App() {
@@ -11,9 +12,9 @@ function App() {
   if (!isLoaded) {
     return (
       <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <BrainCircuit size={48} color="var(--accent-primary)" style={{ marginBottom: '1rem', animation: 'spin 2s linear infinite' }} />
-          <h2 className="text-gradient">Carregando...</h2>
+        <div className="pulse-glow" style={{ textAlign: 'center' }}>
+          <BrainCircuit size={64} color="var(--accent-primary)" style={{ marginBottom: '1.5rem' }} />
+          <h2 className="text-gradient" style={{ fontSize: '2rem' }}>Carregando...</h2>
         </div>
       </div>
     );
@@ -23,6 +24,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/project/:id" element={<ProjectPage />} />
+      <Route path="/history" element={<GlobalHistory />} />
     </Routes>
   );
 }

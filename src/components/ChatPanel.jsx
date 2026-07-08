@@ -1,31 +1,70 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTaskContext } from '../context/TaskContext';
-import { Send, Clock, Check, X } from 'lucide-react';
+import { Send, Clock, Check, X, MessageCircle, X as CloseIcon } from 'lucide-react';
 
 export const ChatPanel = () => {
   const { chatMessages, handleAIInput, suggestions, acceptSuggestion, rejectSuggestion } = useTaskContext();
   const [text, setText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const endRef = useRef(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages, suggestions, isProcessing]);
+    if (isOpen) {
+      endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, suggestions, isProcessing, isOpen]);
 
   const send = async () => {
     if (!text.trim()) return;
     const txt = text;
     setText('');
     setIsProcessing(true);
-    await handleAIInput(txt);
-    setIsProcessing(false);
+    
+    try {
+      await handleAIInput(txt);
+    } catch (e) {
+      console.error("Erro na comunicação com a IA", e);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
+  if (!isOpen) {
+    return (
+      <button 
+        className="btn-icon"
+        onClick={() => setIsOpen(true)}
+        style={{
+          position: 'fixed', bottom: '2rem', right: '2rem',
+          background: 'var(--accent-gradient)', color: '#fff',
+          width: '64px', height: '64px', borderRadius: '50%',
+          boxShadow: '0 8px 32px rgba(99, 102, 241, 0.4)',
+          zIndex: 1000,
+          transition: 'transform 0.3s ease'
+        }}
+        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+      >
+        <MessageCircle size={32} />
+      </button>
+    );
+  }
+
   return (
-    <div className="glass-panel chat-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '500px', maxHeight: '700px' }}>
-      <div style={{ padding: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
-        <h3 className="text-gradient">IA Assistente</h3>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Relate suas vitórias ou peça ajuda</p>
+    <div className="glass-panel chat-panel animate-fade-in" style={{ 
+      position: 'fixed', bottom: '2rem', right: '2rem',
+      width: '90%', maxWidth: '380px', height: '600px', maxHeight: '80vh',
+      display: 'flex', flexDirection: 'column', zIndex: 1000,
+      boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
+      background: 'var(--glass-bg)'
+    }}>
+      <div style={{ padding: '1rem', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h3 className="text-gradient">IA Assistente</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Relate suas vitórias ou peça ajuda</p>
+        </div>
+        <button className="btn-icon" onClick={() => setIsOpen(false)}><CloseIcon size={20} /></button>
       </div>
       
       <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -38,7 +77,7 @@ export const ChatPanel = () => {
         {chatMessages.map(m => (
           <div key={m.id} style={{ 
             alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
-            background: m.role === 'user' ? 'var(--accent-primary)' : 'var(--glass-bg)',
+            background: m.role === 'user' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
             color: '#fff',
             padding: '0.8rem 1rem', 
             borderRadius: '12px', 
@@ -74,7 +113,7 @@ export const ChatPanel = () => {
         )}
 
         {isProcessing && (
-          <div style={{ alignSelf: 'flex-start', background: 'var(--glass-bg)', padding: '0.8rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)' }}>
+          <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '0.8rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)' }}>
             <Clock className="spin" size={16} /> Pensando...
           </div>
         )}
@@ -87,7 +126,7 @@ export const ChatPanel = () => {
           value={text} 
           onChange={e => setText(e.target.value)} 
           onKeyDown={e => e.key === 'Enter' && send()}
-          placeholder="Trabalhei 50m no projeto X e fiz Y..." 
+          placeholder="Digite sua mensagem..." 
           style={{ flex: 1, padding: '0.8rem 1rem', borderRadius: '24px', border: '1px solid var(--glass-border)', background: 'var(--glass-bg)', color: '#fff', outline: 'none' }}
         />
         <button onClick={send} disabled={isProcessing} style={{ background: 'var(--accent-gradient)', border: 'none', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', opacity: isProcessing ? 0.5 : 1 }}>
