@@ -1,60 +1,53 @@
-export const processAIInput = async (text, currentProjects) => {
+export const processAIInput = async (text, currentProjects, chatHistory = []) => {
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   if (!apiKey) {
     console.error("DeepSeek API Key não configurada!");
-    alert("Por favor, adicione sua chave do DeepSeek no arquivo .env (VITE_DEEPSEEK_API_KEY)");
-    return [];
+    alert("Por favor, adicione sua chave do DeepSeek no arquivo .env");
+    return { text: "Erro: Chave de API não configurada.", actions: [] };
   }
 
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
   
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const projectList = currentProjects.map(p => `- ${p.name} (Meta: ${p.goal || 'Nenhuma meta definida'})`).join('\n');
 
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-  
-  const projectList = currentProjects.map(p => `- ${p.name}`).join('\n');
+  const systemPrompt = `Você é um Assistente de Engajamento e Produtividade. O usuário vai relatar o que fez, quais foram suas vitórias diárias ou pedir ajuda.
+Data de Hoje: ${todayStr}
 
-  const systemPrompt = `Você é um assistente de produtividade especializado em analisar linguagem natural e extrair tarefas e ações estruturadas.
-Datas de Referência:
-- Hoje: ${todayStr}
-- Amanhã: ${tomorrowStr}
-- Ontem: ${yesterdayStr}
-
-Projetos existentes do usuário:
+Projetos ativos e suas metas:
 ${projectList || "Nenhum projeto ainda."}
 
-Sua única função é receber o texto do usuário e retornar um array JSON contendo as ações. NÃO retorne nenhum texto extra, apenas o JSON puro, começando com [ e terminando com ].
+**Sua Personalidade:**
+Seja motivador, conciso, aja como um parceiro de accountability. Parabenize-o pelas vitórias.
 
-Tipos de ação possíveis e regras matemáticas de data:
-1. CREATE_TASK: O usuário quer criar uma nova tarefa futura ou para hoje.
-   - Campos: "type": "CREATE_TASK", "title" (string), "targetDate" (YYYY-MM-DD), "projectName" (string).
-   - "targetDate": Faça os cálculos! Se o usuário disser "daqui 30 dias", some 30 dias à data de Hoje (${todayStr}) e retorne o formato YYYY-MM-DD exato. Se for "próxima terça", ache a data. Se não houver data, use ${todayStr}.
+**Sua Resposta (MUITO IMPORTANTE):**
+Você DEVE SEMPRE responder no seguinte formato de duas partes separadas por "===ACTIONS===":
 
-2. COMPLETE_TASK: O usuário está dizendo que concluiu uma tarefa que JÁ EXISTIA na lista dele hoje.
-   - Campos: "type": "COMPLETE_TASK", "keyword" (string para buscar na lista).
+1. Uma resposta em texto natural conversando com o usuário, motivando-o e sugerindo 1 ou 2 próximos passos com base nas metas do projeto.
+2. A exata string "===ACTIONS==="
+3. Um array JSON de ações estruturadas (pode ser vazio []).
 
-3. LOG_PAST_TASK: O usuário está relatando uma tarefa que ele JÁ FEZ no passado (ex: "ontem eu fiz a reunião" ou "semana passada eu entreguei o projeto").
-   - Campos: "type": "LOG_PAST_TASK", "title" (string), "targetDate" (YYYY-MM-DD do dia que ele fez), "projectName" (string).
-   - O sistema criará a tarefa e automaticamente a marcará como concluída na data informada, para que fique no histórico.
+Ações JSON possíveis:
+1. "SUGGEST_TASK": Sugerir uma tarefa (o usuário terá que aceitar depois).
+   Campos: "type": "SUGGEST_TASK", "title", "projectName"
+2. "LOG_VICTORY": Registrar uma vitória que ele acabou de relatar no chat.
+   Campos: "type": "LOG_VICTORY", "title", "projectName", "date": "${todayStr}"
+3. "COMPLETE_TASK": Concluir uma tarefa que já estava na lista dele e ele disse que fez.
+   Campos: "type": "COMPLETE_TASK", "keyword"
 
-Exemplo 1: "Vou fazer o roteiro do Projeto 1 amanhã e também terminei a edição daquele vídeo hoje"
+**Exemplo de Resposta:**
+Muito bom! Trabalhar 50 minutos nos canais é um ótimo avanço para a meta de engajamento. Continue assim! Sugiro que amanhã você revise as métricas iniciais.
+===ACTIONS===
 [
-  { "type": "CREATE_TASK", "title": "Fazer roteiro", "targetDate": "${tomorrowStr}", "projectName": "Projeto 1" },
-  { "type": "COMPLETE_TASK", "keyword": "edição de vídeo" }
-]
+  { "type": "LOG_VICTORY", "title": "Trabalhei 50 mins nos canais e configurei X", "projectName": "Geral", "date": "${todayStr}" },
+  { "type": "SUGGEST_TASK", "title": "Revisar métricas iniciais", "projectName": "Geral" }
+]`;
 
-Exemplo 2: "Cara, daqui 30 dias eu tenho que pagar o imposto da Empresa. Ah, e ontem eu finalizei o design da landing page!"
-[
-  { "type": "CREATE_TASK", "title": "Pagar imposto", "targetDate": "YYYY-MM-DD", "projectName": "Empresa" }, // (Calcule a data correta somando 30 dias a Hoje)
-  { "type": "LOG_PAST_TASK", "title": "Finalizar design da landing page", "targetDate": "${yesterdayStr}", "projectName": "Empresa" }
-]
-
-Sempre responda estritamente com JSON válido.`;
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...chatHistory.slice(-5).map(m => ({ role: m.role, content: m.text })), // Ultimos 5 dialogos
+    { role: 'user', content: text }
+  ];
 
   try {
     const response = await fetch('https://api.deepseek.com/chat/completions', {
@@ -65,30 +58,41 @@ Sempre responda estritamente com JSON válido.`;
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: text }
-        ],
-        temperature: 0.1
+        messages: messages,
+        temperature: 0.4
       })
     });
 
     if (!response.ok) {
       console.error("Erro na API:", await response.text());
-      alert("Erro ao contatar a IA (DeepSeek). Olhe o console.");
-      return [];
+      return { text: "Ocorreu um erro ao falar com o cérebro.", actions: [] };
     }
 
     const data = await response.json();
     let content = data.choices[0].message.content.trim();
     
-    if (content.startsWith('```json')) content = content.replace(/^```json/, '').replace(/```$/, '').trim();
-    else if (content.startsWith('```')) content = content.replace(/^```/, '').replace(/```$/, '').trim();
+    let textPart = content;
+    let actionsPart = "[]";
 
-    return JSON.parse(content);
+    if (content.includes("===ACTIONS===")) {
+      const parts = content.split("===ACTIONS===");
+      textPart = parts[0].trim();
+      let rawJson = parts[1].trim();
+      if (rawJson.startsWith('```json')) rawJson = rawJson.replace(/^```json/, '').replace(/```$/, '').trim();
+      else if (rawJson.startsWith('```')) rawJson = rawJson.replace(/^```/, '').replace(/```$/, '').trim();
+      actionsPart = rawJson;
+    }
+
+    let actions = [];
+    try {
+      actions = JSON.parse(actionsPart);
+    } catch (e) {
+      console.error("Erro parseando JSON das ações", e, actionsPart);
+    }
+
+    return { text: textPart, actions };
   } catch (err) {
     console.error("Erro no processamento da IA:", err);
-    alert("Falha na comunicação com a IA ou formato de resposta inválido.");
-    return [];
+    return { text: "Falha na conexão com a IA.", actions: [] };
   }
 };
