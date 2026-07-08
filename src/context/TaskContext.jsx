@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { processAIInput } from '../utils/aiMock';
+import { processAIInput } from '../utils/aiService';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 
