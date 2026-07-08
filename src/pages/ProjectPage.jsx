@@ -5,7 +5,7 @@ import { ArrowLeft, Target, Trophy, CheckCircle } from 'lucide-react';
 export const ProjectPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects, tasks, victories } = useTaskContext();
+  const { projects, tasks, victories, timeLogs } = useTaskContext();
   
   const project = projects.find(p => p.id === id);
   
@@ -27,6 +27,12 @@ export const ProjectPage = () => {
 
   const sortedDates = Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
 
+  const projectLogs = timeLogs.filter(log => log.projectId === id);
+  const totalMinutes = projectLogs.reduce((acc, log) => acc + log.durationInMinutes, 0);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const remainingMins = totalMinutes % 60;
+  const timeString = totalHours > 0 ? `${totalHours}h ${remainingMins}m` : `${remainingMins}m`;
+
   return (
     <div className="app-container animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '2rem', paddingBottom: '4rem' }}>
       <button className="btn-small" onClick={() => navigate('/')} style={{ marginBottom: '2rem', background: 'var(--glass-bg)' }}>
@@ -34,7 +40,13 @@ export const ProjectPage = () => {
       </button>
 
       <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '3rem', border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(145deg, rgba(30,30,40,0.8), rgba(15,15,20,0.9))' }}>
-        <h1 className="text-gradient" style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{project.name}</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+          <h1 className="text-gradient" style={{ fontSize: '2.5rem', margin: 0 }}>{project.name}</h1>
+          <div style={{ textAlign: 'right', background: 'rgba(255,255,255,0.05)', padding: '0.8rem 1rem', borderRadius: '12px' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Tempo Total</p>
+            <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--accent-primary)', margin: 0 }}>{timeString}</p>
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
           <Target size={24} color="var(--accent-primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
           <div>

@@ -1,7 +1,7 @@
 :root {
-  --bg-primary: #222630; /* Fundo mais claro, azul/cinza suave */
-  --bg-secondary: #2e3340; /* Painéis mais visíveis */
-  --glass-bg: rgba(46, 51, 64, 0.9); /* Menos transparente para melhorar a leitura */
+  --bg-primary: #16181f; /* Fundo Midnight Graphite, equilíbrio perfeito */
+  --bg-secondary: #20232e; /* Painéis mais visíveis */
+  --glass-bg: rgba(32, 35, 46, 0.85);
   --glass-border: rgba(255, 255, 255, 0.15);
   --glass-border-hover: rgba(255, 255, 255, 0.25);
   --text-primary: #f8fafc;
@@ -30,10 +30,59 @@ body {
   background-attachment: fixed;
 }
 
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
+/* App Layout Sidebar */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--glass-border);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.sidebar-nav {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-primary);
+}
+
+.main-wrapper {
+  flex: 1;
+  margin-left: 260px; /* offset sidebar */
   padding: 1.5rem;
+  max-width: 1200px;
+}
+
+.app-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Glassmorphism Refinado */

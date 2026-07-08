@@ -15,6 +15,7 @@ export const TaskProvider = ({ children }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [victories, setVictories] = useState([]);
   const [productivityRatings, setProductivityRatings] = useState([]);
+  const [quotes, setQuotes] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const skipSyncRef = useRef(true);
 
@@ -31,6 +32,7 @@ export const TaskProvider = ({ children }) => {
           setSuggestions(payload.suggestions || []);
           setVictories(payload.victories || []);
           setProductivityRatings(payload.productivityRatings || []);
+          setQuotes(payload.quotes || [{ id: '1', text: 'Só ação gera poder.' }]);
         }
       } catch (err) {
         console.error("Erro ao puxar dados da nuvem:", err);
@@ -45,7 +47,7 @@ export const TaskProvider = ({ children }) => {
   useEffect(() => {
     if (skipSyncRef.current || !isLoaded) return;
     const syncToCloud = async () => {
-      const payload = { projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings };
+      const payload = { projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes };
       try {
         await supabase.from('todo10x').upsert({ id: 1, data_payload: payload });
       } catch (err) {
@@ -184,6 +186,9 @@ export const TaskProvider = ({ children }) => {
     setSuggestions(prev => prev.filter(s => s.id !== sugId));
   };
 
+  const addQuote = (text) => setQuotes(prev => [...prev, { id: Date.now().toString(), text }]);
+  const removeQuote = (id) => setQuotes(prev => prev.filter(q => q.id !== id));
+
   const handleAIInput = async (text) => {
     const userMsg = { id: Date.now().toString(), role: 'user', text };
     setChatMessages(prev => [...prev, userMsg]);
@@ -278,6 +283,7 @@ export const TaskProvider = ({ children }) => {
       chatMessages, handleAIInput,
       suggestions, acceptSuggestion, rejectSuggestion,
       productivityRatings, addProductivityRating,
+      quotes, addQuote, removeQuote,
       isLoaded, triggerConfetti
     }}>
       {children}

@@ -10,10 +10,17 @@ import { Pomodoro } from '../components/Pomodoro';
 import { NewProjectModal } from '../components/NewProjectModal';
 
 export const Home = () => {
-  const { projects, tasks, toggleTaskComplete } = useTaskContext();
+  const { projects, tasks, toggleTaskComplete, quotes } = useTaskContext();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [dailyQuote, setDailyQuote] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (quotes.length > 0) {
+      setDailyQuote(quotes[Math.floor(Math.random() * quotes.length)].text);
+    }
+  }, [quotes]);
 
   const activeProjects = projects.filter(p => p.status !== 'archived');
   const archivedProjects = projects.filter(p => p.status === 'archived');
@@ -23,14 +30,11 @@ export const Home = () => {
       {isCreatingProject && <NewProjectModal onClose={() => setIsCreatingProject(false)} />}
       
       <header className="header glass-panel">
-        <div className="logo">
-          <BrainCircuit className="logo-icon" size={32} color="var(--accent-primary)" />
-          <h1 className="text-gradient">AI Engagement</h1>
+        <div>
+          <h1 className="text-gradient">Resumo de Hoje</h1>
+          {dailyQuote && <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: '0.3rem', fontSize: '0.95rem' }}>"{dailyQuote}"</p>}
         </div>
         <div className="header-stats" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button className="btn-small" onClick={() => navigate('/history')}>
-            <History size={16} /> Diário Global
-          </button>
           <span style={{ textTransform: 'capitalize', color: 'var(--text-secondary)' }}>
             {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </span>
@@ -118,7 +122,7 @@ export const Home = () => {
                         <div className="task-content">
                           <span className="task-title">{task.title}</span>
                           <div className="task-meta">
-                            {project && <span className="task-project-badge">{project.name}</span>}
+                            {project ? <span className="task-project-badge">{project.name}</span> : <span className="task-project-badge" style={{background: 'rgba(255,255,255,0.1)', color: '#fff'}}>Geral</span>}
                             <span className="task-date-badge" style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}>
                               {task.date}
                             </span>

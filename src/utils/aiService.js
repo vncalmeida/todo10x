@@ -42,7 +42,7 @@ Você DEVE SEMPRE responder no seguinte formato de duas partes separadas por "==
 
 Ações JSON possíveis:
 1. "SUGGEST_TASK": Sugerir uma tarefa (o usuário terá que aceitar depois).
-   Campos: "type": "SUGGEST_TASK", "title", "projectId" (obrigatório, use o ID acima)
+   Campos: "type": "SUGGEST_TASK", "title", "projectId" (use o ID acima, ou omita se for uma tarefa Geral/Solta do dia a dia)
 2. "LOG_VICTORY": Registrar uma vitória que ele acabou de relatar.
    Campos: "type": "LOG_VICTORY", "title", "projectId", "date": "${todayStr}"
 3. "COMPLETE_TASK": Concluir uma tarefa que já estava na lista dele e ele disse que fez.
@@ -51,6 +51,7 @@ Ações JSON possíveis:
    Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes" (inteiro), "date" (YYYY-MM-DD deduzido, ex: ontem = ${yesterdayStr})
 5. "CREATE_PROJECT": O usuário pediu para criar um novo projeto.
    Campos: "type": "CREATE_PROJECT", "name", "description" (a meta principal), "milestones" (texto corrido com os marcos)
+   (Dica: Se ele pedir para criar um projeto e já listar as tarefas, retorne um array com múltiplas ações: primeiro o CREATE_PROJECT e depois vários SUGGEST_TASK usando o campo "projectName" para vinculá-las ao projeto recém criado).
 6. "ARCHIVE_PROJECT": O usuário quer arquivar/encerrar um projeto.
    Campos: "type": "ARCHIVE_PROJECT", "projectId"
 7. "UPDATE_PROGRESS": O usuário quer definir manualmente a % de conclusão de um projeto (ex: "Coloque o projeto X em 22%").
