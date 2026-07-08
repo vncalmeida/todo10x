@@ -113,8 +113,6 @@ export const Home = () => {
           </div>
         </div>
       </main>
-
-      <ChatPanel />
     </div>
   );
 };

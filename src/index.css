@@ -1,13 +1,13 @@
 :root {
-  --bg-primary: #0a0a0c; /* Fundo extremamente escuro, mas não preto absoluto */
-  --bg-secondary: #141418; /* Cinza chumbo muito elegante */
-  --glass-bg: rgba(26, 26, 32, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --glass-border-hover: rgba(255, 255, 255, 0.15);
-  --text-primary: #f0f0f5;
-  --text-secondary: #8b8b99;
-  --accent-primary: #6366f1; /* Indigo suave e premium */
-  --accent-secondary: #8b5cf6; /* Roxo vibrante */
+  --bg-primary: #222630; /* Fundo mais claro, azul/cinza suave */
+  --bg-secondary: #2e3340; /* Painéis mais visíveis */
+  --glass-bg: rgba(46, 51, 64, 0.9); /* Menos transparente para melhorar a leitura */
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-hover: rgba(255, 255, 255, 0.25);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-primary: #6366f1;
+  --accent-secondary: #8b5cf6;
   --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   --success: #10b981; /* Verde esmeralda */
   --danger: #ef4444;

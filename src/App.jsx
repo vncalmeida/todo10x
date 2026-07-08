@@ -4,6 +4,7 @@ import { BrainCircuit } from 'lucide-react';
 import { Home } from './pages/Home';
 import { ProjectPage } from './pages/ProjectPage';
 import { GlobalHistory } from './pages/GlobalHistory';
+import { ChatPanel } from './components/ChatPanel';
 import './App.css';
 
 function App() {
@@ -21,11 +22,14 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/project/:id" element={<ProjectPage />} />
-      <Route path="/history" element={<GlobalHistory />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/project/:id" element={<ProjectPage />} />
+        <Route path="/history" element={<GlobalHistory />} />
+      </Routes>
+      <ChatPanel />
+    </>
   );
 }
 
