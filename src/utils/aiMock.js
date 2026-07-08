@@ -34,6 +34,8 @@ Ações JSON possíveis:
    Campos: "type": "LOG_VICTORY", "title", "projectName", "date": "${todayStr}"
 3. "COMPLETE_TASK": Concluir uma tarefa que já estava na lista dele e ele disse que fez.
    Campos: "type": "COMPLETE_TASK", "keyword"
+4. "LOG_PAST_TIME": O usuário está dizendo que trabalhou em um projeto (ex: "ontem trabalhei 3 horas no projeto X").
+   Campos: "type": "LOG_PAST_TIME", "projectName", "durationInMinutes" (inteiro), "date" (YYYY-MM-DD deduzido, ex: ontem = ${yesterdayStr})
 
 **Exemplo de Resposta:**
 Muito bom! Trabalhar 50 minutos nos canais é um ótimo avanço para a meta de engajamento. Continue assim! Sugiro que amanhã você revise as métricas iniciais.

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { processAIInput } from '../utils/aiMock';
 import { supabase } from '../lib/supabase';
+import confetti from 'canvas-confetti';
 
 const TaskContext = createContext();
 
@@ -13,6 +14,7 @@ export const TaskProvider = ({ children }) => {
   const [chatMessages, setChatMessages] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [victories, setVictories] = useState([]);
+  const [productivityRatings, setProductivityRatings] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const skipSyncRef = useRef(true);
 
@@ -28,6 +30,7 @@ export const TaskProvider = ({ children }) => {
           setChatMessages(payload.chatMessages || []);
           setSuggestions(payload.suggestions || []);
           setVictories(payload.victories || []);
+          setProductivityRatings(payload.productivityRatings || []);
         }
       } catch (err) {
         console.error("Erro ao puxar dados da nuvem:", err);
@@ -42,7 +45,7 @@ export const TaskProvider = ({ children }) => {
   useEffect(() => {
     if (skipSyncRef.current || !isLoaded) return;
     const syncToCloud = async () => {
-      const payload = { projects, tasks, timeLogs, chatMessages, suggestions, victories };
+      const payload = { projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings };
       try {
         await supabase.from('todo10x').upsert({ id: 1, data_payload: payload });
       } catch (err) {
@@ -52,13 +55,22 @@ export const TaskProvider = ({ children }) => {
     
     const debounceTimer = setTimeout(syncToCloud, 1000);
     return () => clearTimeout(debounceTimer);
-  }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, isLoaded]);
+  }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, isLoaded]);
 
-  const addProject = (name, description, dailyGoal = 30) => {
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#00e676', '#00bcd4', '#ffeb3b', '#ff4081']
+    });
+  };
+
+  const addProject = (name, description, dailyGoal = 60) => {
     const newProject = {
       id: Date.now().toString(),
       name,
-      description, // Goal/Meta
+      description,
       progress: 0,
       dailyGoal
     };
@@ -101,6 +113,7 @@ export const TaskProvider = ({ children }) => {
       setTasks(currentTasks => {
         const task = currentTasks.find(t => t.id === taskId);
         if (task && task.completed) {
+          triggerConfetti();
           setProjects(currentProjects => {
             return currentProjects.map(p => {
               if (p.id === task.projectId) {
@@ -119,15 +132,42 @@ export const TaskProvider = ({ children }) => {
     }, 100);
   };
 
-  const logTime = (projectId, durationInMinutes) => {
+  const logTime = (projectId, durationInMinutes, pastDateStr = null) => {
+    const logDate = pastDateStr || new Date().toISOString().split('T')[0];
     const newLog = {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random(),
       projectId,
       durationInMinutes,
-      date: new Date().toISOString().split('T')[0],
+      date: logDate,
       timestamp: Date.now()
     };
     setTimeLogs(prev => [...prev, newLog]);
+    
+    // Confetti if goal reached for today
+    if (!pastDateStr) {
+       const proj = projects.find(p => p.id === projectId);
+       if (proj) {
+          setTimeLogs(currentLogs => {
+             const workedToday = currentLogs.filter(l => l.date === logDate && l.projectId === projectId)
+                                            .reduce((acc, l) => acc + l.durationInMinutes, 0);
+             if (workedToday + durationInMinutes >= proj.dailyGoal) {
+                triggerConfetti();
+             }
+             return currentLogs;
+          });
+       }
+    }
+  };
+
+  const addProductivityRating = (score) => {
+    const date = new Date().toISOString().split('T')[0];
+    setProductivityRatings(prev => {
+      const filtered = prev.filter(r => r.date !== date);
+      return [...filtered, { date, score }];
+    });
+    if (score >= 4) {
+      triggerConfetti();
+    }
   };
 
   const acceptSuggestion = (sugId) => {
@@ -159,11 +199,10 @@ export const TaskProvider = ({ children }) => {
       result.actions.forEach(action => {
         let projectId = action.projectId;
         
-        // Tratar nome de projeto vindo da IA se não tiver ID
         if (!projectId && action.projectName) {
           let proj = newProjects.find(p => p.name.toLowerCase() === action.projectName.toLowerCase());
           if (!proj) {
-            proj = { id: Date.now().toString() + Math.random(), name: action.projectName, progress: 0, dailyGoal: 30 };
+            proj = { id: Date.now().toString() + Math.random(), name: action.projectName, progress: 0, dailyGoal: 60 };
             newProjects.push(proj);
           }
           projectId = proj.id;
@@ -178,8 +217,6 @@ export const TaskProvider = ({ children }) => {
         }
         else if (action.type === 'LOG_VICTORY' && projectId) {
           addVictory(projectId, action.title, action.date);
-          
-          // Checa se a vitória mata alguma sugestão existente
           setSuggestions(prev => prev.filter(s => !s.title.toLowerCase().includes(action.title.toLowerCase())));
         }
         else if (action.type === 'COMPLETE_TASK') {
@@ -189,6 +226,9 @@ export const TaskProvider = ({ children }) => {
             }
             return t;
           }));
+        }
+        else if (action.type === 'LOG_PAST_TIME' && projectId) {
+          logTime(projectId, action.durationInMinutes, action.date);
         }
       });
 
@@ -206,7 +246,8 @@ export const TaskProvider = ({ children }) => {
       timeLogs, logTime,
       chatMessages, handleAIInput,
       suggestions, acceptSuggestion, rejectSuggestion,
-      isLoaded
+      productivityRatings, addProductivityRating,
+      isLoaded, triggerConfetti
     }}>
       {children}
     </TaskContext.Provider>

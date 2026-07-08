@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
 import { BrainCircuit, Plus, Circle } from 'lucide-react';
-import { StreakGraph } from '../components/StreakGraph';
+import { StreakCalendar } from '../components/StreakCalendar';
+import { HoursChart } from '../components/HoursChart';
+import { MoodTracker } from '../components/MoodTracker';
 import { ChatPanel } from '../components/ChatPanel';
 import { Pomodoro } from '../components/Pomodoro';
 import { NewProjectModal } from '../components/NewProjectModal';
@@ -32,7 +34,13 @@ export const Home = () => {
         <div className="layout-grid">
           <div className="left-column">
             
-            <StreakGraph />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <StreakCalendar />
+                <MoodTracker />
+              </div>
+              <HoursChart />
+            </div>
             
             <section className="projects-section">
               <div className="section-header">
