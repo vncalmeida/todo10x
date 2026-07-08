@@ -12,7 +12,11 @@ import { NewProjectModal } from '../components/NewProjectModal';
 export const Home = () => {
   const { projects, tasks, toggleTaskComplete } = useTaskContext();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const navigate = useNavigate();
+
+  const activeProjects = projects.filter(p => p.status !== 'archived');
+  const archivedProjects = projects.filter(p => p.status === 'archived');
 
   return (
     <div className="app-container animate-fade-in">
@@ -48,7 +52,7 @@ export const Home = () => {
               </div>
               
               <div className="projects-grid">
-                {projects.map(project => (
+                {activeProjects.map(project => (
                   <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)}>
                     <h3 style={{ marginBottom: project.description ? '0.5rem' : '1rem' }}>{project.name}</h3>
                     {project.description && (
@@ -61,10 +65,31 @@ export const Home = () => {
                     </div>
                   </div>
                 ))}
-                {projects.length === 0 && (
-                  <p style={{ color: 'var(--text-secondary)' }}>Nenhum projeto ativo. Crie um para começar!</p>
+                {activeProjects.length === 0 && (
+                  <p style={{ color: 'var(--text-secondary)' }}>Nenhum projeto ativo. Peça para a IA criar um!</p>
                 )}
               </div>
+
+              {archivedProjects.length > 0 && (
+                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                  <button className="btn-small" style={{ margin: '0 auto', background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }} onClick={() => setShowArchived(!showArchived)}>
+                    {showArchived ? 'Ocultar Arquivados' : `Ver Arquivados (${archivedProjects.length})`}
+                  </button>
+                </div>
+              )}
+
+              {showArchived && (
+                <div className="projects-grid" style={{ marginTop: '1rem', opacity: 0.6 }}>
+                  {archivedProjects.map(project => (
+                    <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)}>
+                      <h3 style={{ marginBottom: project.description ? '0.5rem' : '1rem' }}>{project.name} <span style={{ fontSize: '0.7rem', border: '1px solid var(--text-secondary)', padding: '2px 6px', borderRadius: '4px', marginLeft: '0.5rem' }}>ARQUIVADO</span></h3>
+                      <div className="progress-bar" style={{ marginTop: 'auto' }}>
+                        <div className="progress-fill" style={{ width: `${project.progress}%`, background: 'var(--text-secondary)' }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>

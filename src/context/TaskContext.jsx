@@ -66,11 +66,13 @@ export const TaskProvider = ({ children }) => {
     });
   };
 
-  const addProject = (name, description, dailyGoal = 60) => {
+  const addProject = (name, description, dailyGoal = 60, milestones = '') => {
     const newProject = {
       id: Date.now().toString(),
       name,
       description,
+      milestones,
+      status: 'active',
       progress: 0,
       dailyGoal
     };
@@ -186,7 +188,7 @@ export const TaskProvider = ({ children }) => {
     const userMsg = { id: Date.now().toString(), role: 'user', text };
     setChatMessages(prev => [...prev, userMsg]);
 
-    const result = await processAIInput(text, projects, chatMessages);
+    const result = await processAIInput(text, projects, chatMessages, tasks);
     
     if (result.text) {
       const aiMsg = { id: Date.now().toString() + 'ai', role: 'assistant', text: result.text };
@@ -202,7 +204,7 @@ export const TaskProvider = ({ children }) => {
         if (!projectId && action.projectName) {
           let proj = newProjects.find(p => p.name.toLowerCase() === action.projectName.toLowerCase());
           if (!proj) {
-            proj = { id: Date.now().toString() + Math.random(), name: action.projectName, progress: 0, dailyGoal: 60 };
+            proj = { id: Date.now().toString() + Math.random(), name: action.projectName, progress: 0, dailyGoal: 60, status: 'active' };
             newProjects.push(proj);
           }
           projectId = proj.id;
@@ -230,9 +232,29 @@ export const TaskProvider = ({ children }) => {
         else if (action.type === 'LOG_PAST_TIME' && projectId) {
           logTime(projectId, action.durationInMinutes, action.date);
         }
+        else if (action.type === 'CREATE_PROJECT') {
+          const newProj = {
+            id: Date.now().toString() + Math.random(),
+            name: action.name,
+            description: action.description,
+            milestones: action.milestones || '',
+            status: 'active',
+            progress: 0,
+            dailyGoal: 60
+          };
+          newProjects.push(newProj);
+        }
+        else if (action.type === 'ARCHIVE_PROJECT' && projectId) {
+          const idx = newProjects.findIndex(p => p.id === projectId);
+          if (idx !== -1) newProjects[idx] = { ...newProjects[idx], status: 'archived' };
+        }
+        else if (action.type === 'UPDATE_PROGRESS' && projectId) {
+          const idx = newProjects.findIndex(p => p.id === projectId);
+          if (idx !== -1) newProjects[idx] = { ...newProjects[idx], progress: action.progress };
+        }
       });
 
-      if (newProjects.length !== projects.length) {
+      if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS'].includes(a.type))) {
         setProjects(newProjects);
       }
     }
