@@ -25,6 +25,7 @@ export const ChatPanel = () => {
       await handleAIInput(txt);
     } catch (e) {
       console.error("Erro na comunicação com a IA", e);
+      alert("Ocorreu um erro grave no Chat. Verifique o console ou tente novamente.");
     } finally {
       setIsProcessing(false);
     }

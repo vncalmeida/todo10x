@@ -8,6 +8,9 @@ export const processAIInput = async (text, currentProjects, chatHistory = []) =>
 
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
   
   const projectList = currentProjects.map(p => `- ${p.name} (Meta: ${p.goal || 'Nenhuma meta definida'})`).join('\n');
 
