@@ -252,9 +252,18 @@ export const TaskProvider = ({ children }) => {
           const idx = newProjects.findIndex(p => p.id === projectId);
           if (idx !== -1) newProjects[idx] = { ...newProjects[idx], progress: action.progress };
         }
+        else if (action.type === 'ERASE_ALL') {
+          setProjects([]);
+          setTasks([]);
+          setTimeLogs([]);
+          setVictories([]);
+          setSuggestions([]);
+          setChatMessages([{ id: Date.now().toString(), role: 'assistant', text: 'Todos os dados foram resetados com sucesso. Como posso ajudar com seu novo recomeço?' }]);
+          newProjects = [];
+        }
       });
 
-      if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS'].includes(a.type))) {
+      if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS', 'ERASE_ALL'].includes(a.type))) {
         setProjects(newProjects);
       }
     }

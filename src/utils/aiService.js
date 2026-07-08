@@ -55,6 +55,8 @@ Ações JSON possíveis:
    Campos: "type": "ARCHIVE_PROJECT", "projectId"
 7. "UPDATE_PROGRESS": O usuário quer definir manualmente a % de conclusão de um projeto (ex: "Coloque o projeto X em 22%").
    Campos: "type": "UPDATE_PROGRESS", "projectId", "progress" (numero de 0 a 100)
+8. "ERASE_ALL": O usuário pediu EXPLICITAMENTE para apagar/resetar todos os dados, projetos e tarefas (ex: "Delete tudo", "Resete os projetos").
+   Campos: "type": "ERASE_ALL"
 
 **Exemplo de Resposta:**
 Projeto "Reforma" criado com sucesso! Já anotei os marcos que você pediu.
