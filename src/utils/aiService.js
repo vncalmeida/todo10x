@@ -49,6 +49,7 @@ Ações JSON possíveis:
    Campos: "type": "COMPLETE_TASK", "keyword"
 4. "LOG_PAST_TIME": O usuário está dizendo que trabalhou num projeto (ex: "ontem trabalhei 3 horas").
    Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes" (inteiro), "date" (YYYY-MM-DD deduzido, ex: ontem = ${yesterdayStr})
+   (MUITO IMPORTANTE: Se o usuário disser que trabalhou num projeto e detalhar o que fez, você DEVE retornar a ação LOG_PAST_TIME somada a múltiplas ações LOG_VICTORY ou COMPLETE_TASK para cada coisa que ele fez. Assim o histórico das tarefas fica salvo!)
 5. "CREATE_PROJECT": O usuário pediu para criar um novo projeto.
    Campos: "type": "CREATE_PROJECT", "name", "description" (a meta principal), "milestones" (texto corrido com os marcos)
    (Dica: Se ele pedir para criar um projeto e já listar as tarefas, retorne um array com múltiplas ações: primeiro o CREATE_PROJECT e depois vários SUGGEST_TASK usando o campo "projectName" para vinculá-las ao projeto recém criado).
