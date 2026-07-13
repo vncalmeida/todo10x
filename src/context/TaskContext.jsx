@@ -266,6 +266,9 @@ export const TaskProvider = ({ children }) => {
           setChatMessages([{ id: Date.now().toString(), role: 'assistant', text: 'Todos os dados foram resetados com sucesso. Como posso ajudar com seu novo recomeço?' }]);
           newProjects = [];
         }
+        else if (action.type === 'CLEAR_SUGGESTIONS') {
+          setSuggestions([]);
+        }
       });
 
       if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS', 'ERASE_ALL'].includes(a.type))) {
