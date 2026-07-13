@@ -57,7 +57,7 @@ export const TaskProvider = ({ children }) => {
     
     const debounceTimer = setTimeout(syncToCloud, 1000);
     return () => clearTimeout(debounceTimer);
-  }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, isLoaded]);
+  }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, isLoaded]);
 
   const triggerConfetti = () => {
     confetti({
@@ -186,6 +186,8 @@ export const TaskProvider = ({ children }) => {
     setSuggestions(prev => prev.filter(s => s.id !== sugId));
   };
 
+  const clearSuggestions = () => setSuggestions([]);
+
   const addQuote = (text) => setQuotes(prev => [...prev, { id: Date.now().toString(), text }]);
   const removeQuote = (id) => setQuotes(prev => prev.filter(q => q.id !== id));
 
@@ -284,7 +286,7 @@ export const TaskProvider = ({ children }) => {
       victories, addVictory,
       timeLogs, logTime,
       chatMessages, handleAIInput,
-      suggestions, acceptSuggestion, rejectSuggestion,
+      suggestions, acceptSuggestion, rejectSuggestion, clearSuggestions,
       productivityRatings, addProductivityRating,
       quotes, addQuote, removeQuote,
       isLoaded, triggerConfetti

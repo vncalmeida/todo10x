@@ -3,7 +3,7 @@ import { useTaskContext } from '../context/TaskContext';
 import { Send, Clock, Check, X, MessageCircle, X as CloseIcon } from 'lucide-react';
 
 export const ChatPanel = () => {
-  const { chatMessages, handleAIInput, suggestions, acceptSuggestion, rejectSuggestion } = useTaskContext();
+  const { chatMessages, handleAIInput, suggestions, acceptSuggestion, rejectSuggestion, clearSuggestions } = useTaskContext();
   const [text, setText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +94,10 @@ export const ChatPanel = () => {
 
         {suggestions.length > 0 && (
           <div style={{ background: 'rgba(255, 165, 0, 0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255, 165, 0, 0.3)' }}>
-            <h4 style={{ color: 'var(--accent-primary)', marginBottom: '0.8rem', fontSize: '0.9rem' }}>✨ Tarefas Sugeridas</h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+              <h4 style={{ color: 'var(--accent-primary)', margin: 0, fontSize: '0.9rem' }}>✨ Tarefas Sugeridas</h4>
+              <button onClick={clearSuggestions} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>Limpar Todas</button>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {suggestions.map(s => (
                 <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--glass-bg)', padding: '0.5rem 0.8rem', borderRadius: '8px' }}>
