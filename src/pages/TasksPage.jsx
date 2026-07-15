@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export const TasksPage = () => {
   const { projects, tasks, goals, suggestions, toggleTaskComplete, addTask, acceptSuggestion, rejectSuggestion, clearSuggestions, addGoal, deleteTask, editTask } = useTaskContext();
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskProjectId, setNewTaskProjectId] = useState('');
   const [isCreatingGoal, setIsCreatingGoal] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');
   const [newGoalProjectId, setNewGoalProjectId] = useState('');
@@ -28,7 +29,7 @@ export const TasksPage = () => {
 
   const handleAddManualTask = (e) => {
     if (e.key === 'Enter' && newTaskTitle.trim()) {
-      addTask(null, newTaskTitle.trim(), new Date().toISOString().split('T')[0]);
+      addTask(newTaskProjectId || null, newTaskTitle.trim(), new Date().toISOString().split('T')[0]);
       setNewTaskTitle('');
     }
   };
@@ -183,15 +184,25 @@ export const TasksPage = () => {
           )}
         </div>
 
-        <input 
-          type="text" 
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          onKeyDown={handleAddManualTask}
-          placeholder="Adicionar tarefa avulsa + Enter..." 
-          className="time-input"
-          style={{ width: '100%', padding: '0.8rem 1rem', background: 'transparent', border: '1px solid var(--glass-border)', textAlign: 'left' }}
-        />
+        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
+          <input 
+            type="text" 
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            onKeyDown={handleAddManualTask}
+            placeholder="Adicionar tarefa avulsa + Enter..." 
+            className="time-input"
+            style={{ flex: 1, padding: '0.8rem 1rem', background: 'transparent', border: '1px solid var(--glass-border)', textAlign: 'left' }}
+          />
+          <select
+            value={newTaskProjectId}
+            onChange={(e) => setNewTaskProjectId(e.target.value)}
+            style={{ background: '#0a0a0a', border: '1px solid var(--glass-border)', color: '#fff', padding: '0.8rem 1rem', fontSize: '0.9rem', width: '200px' }}
+          >
+            <option value="">Geral (Sem projeto)</option>
+            {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+        </div>
       </section>
 
       {/* Grouped by Goals */}

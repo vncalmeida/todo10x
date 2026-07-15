@@ -341,8 +341,8 @@ export const TaskProvider = ({ children }) => {
         else if (action.type === 'CLEAR_SUGGESTIONS') {
           setSuggestions([]);
         }
-        else if (action.type === 'CREATE_GOAL' && projectId) {
-          addGoal(projectId, action.title, action.target, action.deadline);
+        else if (action.type === 'CREATE_GOAL') {
+          addGoal(action.projectId || null, action.title, action.target, action.deadline, action.tasks);
         }
         else if (action.type === 'UPDATE_GOAL') {
           updateGoalProgress(action.goalId, action.current);

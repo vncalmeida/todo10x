@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useTaskContext } from './context/TaskContext';
-import { BrainCircuit } from 'lucide-react';
+import { BrainCircuit, Menu } from 'lucide-react';
 import { Home } from './pages/Home';
 import { ProjectPage } from './pages/ProjectPage';
 import { GlobalHistory } from './pages/GlobalHistory';
@@ -13,6 +14,7 @@ import './App.css';
 
 function App() {
   const { isLoaded } = useTaskContext();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (!isLoaded) {
     return (
@@ -27,8 +29,17 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <div className="main-wrapper">
+        <div className="mobile-header">
+          <button className="btn-icon" onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={24} color="var(--text-primary)" />
+          </button>
+          <div className="logo" style={{ margin: 0 }}>
+            <BrainCircuit size={24} color="var(--accent-primary)" />
+            <h1 className="text-gradient" style={{ fontSize: '1.2rem', margin: 0 }}>AI Executive</h1>
+          </div>
+        </div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/project/:id" element={<ProjectPage />} />
