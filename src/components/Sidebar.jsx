@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { BrainCircuit, Home, History, Quote, BarChart2, CheckSquare, X } from 'lucide-react';
+import { BrainCircuit, Home, History, Quote, BarChart2, CheckSquare, X, Clock } from 'lucide-react';
 
 export const Sidebar = ({ isOpen, onClose }) => {
   return (
@@ -37,9 +37,13 @@ export const Sidebar = ({ isOpen, onClose }) => {
             <BarChart2 size={20} />
             <span>Estatísticas</span>
           </NavLink>
-          <NavLink to="/ai-timer" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+          <NavLink to="/ai" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
             <BrainCircuit size={20} />
-            <span>Foco + IA</span>
+            <span>Assistente IA</span>
+          </NavLink>
+          <NavLink to="/timer" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+            <Clock size={20} />
+            <span>Timer Foco</span>
           </NavLink>
         </nav>
       </aside>

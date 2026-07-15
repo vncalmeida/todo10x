@@ -8,7 +8,8 @@ import { GlobalHistory } from './pages/GlobalHistory';
 import { QuotesPage } from './pages/QuotesPage';
 import { StatsPage } from './pages/StatsPage';
 import { TasksPage } from './pages/TasksPage';
-import { AiTimerPage } from './pages/AiTimerPage';
+import { AIPage } from './pages/AIPage';
+import { TimerPage } from './pages/TimerPage';
 import { ChatPanel } from './components/ChatPanel';
 import { Sidebar } from './components/Sidebar';
 import './App.css';
@@ -49,10 +50,11 @@ function App() {
           <Route path="/quotes" element={<QuotesPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/ai-timer" element={<AiTimerPage />} />
+          <Route path="/ai" element={<AIPage />} />
+          <Route path="/timer" element={<TimerPage />} />
         </Routes>
       </div>
-      {location.pathname !== '/ai-timer' && <ChatPanel />}
+      {location.pathname !== '/ai' && <ChatPanel />}
     </div>
   );
 }
