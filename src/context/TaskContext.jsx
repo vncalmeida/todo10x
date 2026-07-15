@@ -270,6 +270,11 @@ export const TaskProvider = ({ children }) => {
       result.actions.forEach(action => {
         let projectId = action.projectId;
         
+        if (projectId && !newProjects.find(p => p.id === projectId)) {
+          let projByName = newProjects.find(p => p.name.toLowerCase() === String(projectId).toLowerCase());
+          if (projByName) projectId = projByName.id;
+        }
+        
         if (!projectId && action.projectName) {
           let proj = newProjects.find(p => p.name.toLowerCase() === action.projectName.toLowerCase());
           if (!proj) {
@@ -288,8 +293,10 @@ export const TaskProvider = ({ children }) => {
           }]);
         }
         else if (action.type === 'LOG_VICTORY' && projectId) {
-          addVictory(projectId, action.title, action.date);
-          setSuggestions(prev => prev.filter(s => !s.title.toLowerCase().includes(action.title.toLowerCase())));
+          addVictory(projectId, action.title || 'Vitória', action.date);
+          if (action.title) {
+            setSuggestions(prev => prev.filter(s => !s.title.toLowerCase().includes(action.title.toLowerCase())));
+          }
         }
         else if (action.type === 'COMPLETE_TASK') {
           setTasks(prev => prev.map(t => {
@@ -300,7 +307,8 @@ export const TaskProvider = ({ children }) => {
           }));
         }
         else if (action.type === 'LOG_PAST_TIME' && projectId) {
-          logTime(projectId, action.durationInMinutes, action.date);
+          const duration = parseInt(String(action.durationInMinutes).replace(/[^0-9]/g, '')) || 60;
+          logTime(projectId, duration, action.date);
         }
         else if (action.type === 'CREATE_PROJECT') {
           const newProj = {

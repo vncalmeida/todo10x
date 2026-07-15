@@ -136,7 +136,12 @@ Entendido, chefe. Criei o projeto de Finanças e movi a tarefa de imposto para e
 
     let actions = [];
     try {
-      actions = JSON.parse(actionsPart);
+      const parsed = JSON.parse(actionsPart);
+      if (Array.isArray(parsed)) {
+        actions = parsed;
+      } else if (parsed && typeof parsed === 'object' && parsed.type) {
+        actions = [parsed];
+      }
     } catch (e) {
       console.error("Erro parseando JSON das ações", e, actionsPart);
     }
