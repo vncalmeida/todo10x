@@ -10,7 +10,7 @@ import { Pomodoro } from '../components/Pomodoro';
 import { NewProjectModal } from '../components/NewProjectModal';
 
 export const Home = () => {
-  const { projects, tasks, toggleTaskComplete, quotes, clearPendingTasks, addTask } = useTaskContext();
+  const { projects, tasks, toggleTaskComplete, goals, addTask, clearPendingTasks, quotes } = useTaskContext();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [dailyQuote, setDailyQuote] = useState('');
@@ -124,6 +124,7 @@ export const Home = () => {
                 ) : (
                   tasks.filter(t => !t.completed).map(task => {
                     const project = projects.find(p => p.id === task.projectId);
+                    const goal = task.goalId ? goals.find(g => g.id === task.goalId) : null;
                     return (
                       <div key={task.id} className="task-item glass-panel">
                         <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
@@ -133,6 +134,7 @@ export const Home = () => {
                           <span className="task-title">{task.title}</span>
                           <div className="task-meta">
                             {project ? <span className="task-project-badge">{project.name}</span> : <span className="task-project-badge" style={{background: 'rgba(255,255,255,0.1)', color: '#fff'}}>Geral</span>}
+                            {goal && <span className="task-project-badge" style={{background: 'rgba(255, 165, 0, 0.2)', color: 'gold', border: '1px solid gold'}}>🎯 {goal.title}</span>}
                             <span className="task-date-badge" style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}>
                               {task.date}
                             </span>

@@ -19,8 +19,8 @@ export const processAIInput = async (text, currentProjects, chatHistory = [], ta
     const total = projTasks.length;
     const projGoals = goals.filter(g => g.projectId === p.id);
     const goalsText = projGoals.length > 0 
-      ? projGoals.map(g => `    - ${g.title}: ${g.current}/${g.target} (Prazo: ${g.deadline || 'Nenhum'})`).join('\n')
-      : 'Nenhuma meta numérica específica.';
+      ? projGoals.map(g => `    - [ID: ${g.id}] ${g.title}: ${g.current}/${g.target} (Prazo: ${g.deadline || 'Nenhum'})`).join('\n')
+      : 'Nenhuma meta específica.';
     return `- [${p.status === 'archived' ? 'ARQUIVADO' : 'ATIVO'}] ${p.name}
   Meta Geral: ${p.description || 'Nenhum'}
   Metas Numéricas Específicas:
@@ -50,7 +50,7 @@ Você DEVE SEMPRE responder no seguinte formato de duas partes separadas por "==
 
 Ações JSON possíveis:
 1. "SUGGEST_TASK": Sugerir uma tarefa (o usuário terá que aceitar depois).
-   Campos: "type": "SUGGEST_TASK", "title", "projectId" (use o ID acima, ou omita se for uma tarefa Geral/Solta do dia a dia)
+   Campos: "type": "SUGGEST_TASK", "title", "projectId" (use o ID acima, ou omita se for uma tarefa Geral/Solta do dia a dia), "goalId" (opcional, use APENAS se a tarefa pertencer a uma meta específica listada acima)
 2. "LOG_VICTORY": Registrar uma vitória que ele acabou de relatar.
    Campos: "type": "LOG_VICTORY", "title", "projectId" (OBRIGATÓRIO. Se não souber, use a REGRA 1), "date": "${todayStr}"
 3. "COMPLETE_TASK": Concluir uma tarefa que já estava na lista dele e ele disse que fez.
@@ -71,8 +71,8 @@ Ações JSON possíveis:
    Campos: "type": "CLEAR_SUGGESTIONS"
 10. "CLEAR_PENDING_TASKS": O usuário pediu para apagar todas as tarefas pendentes ("Próximos Passos") da Home.
     Campos: "type": "CLEAR_PENDING_TASKS"
-11. "CREATE_GOAL": O usuário quer criar uma meta numérica específica para um projeto.
-    Campos: "type": "CREATE_GOAL", "projectId", "title", "target" (numero inteiro), "deadline" (data YYYY-MM-DD opcional)
+11. "CREATE_GOAL": O usuário quer criar uma meta para um projeto.
+    Campos: "type": "CREATE_GOAL", "projectId", "title", "target" (numero inteiro. IGNORE se enviar tasks), "deadline" (data YYYY-MM-DD opcional), "tasks" (array opcional de strings com títulos de tarefas. Se enviado, a meta vira um grupo de tarefas).
 12. "UPDATE_GOAL": O usuário quer atualizar o progresso de uma meta numérica (ex: "Fiz 10 aulas da meta X").
     Campos: "type": "UPDATE_GOAL", "goalId" (procure o ID da meta no histórico ou peça para ele), "current" (novo número inteiro de progresso)
 

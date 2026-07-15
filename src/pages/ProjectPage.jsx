@@ -7,7 +7,7 @@ import { StreakCalendar } from '../components/StreakCalendar';
 export const ProjectPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, updateGoalProgress } = useTaskContext();
+  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, updateGoalProgress, toggleTaskComplete } = useTaskContext();
   const [isEditingTiers, setIsEditingTiers] = useState(false);
   const [tiers, setTiers] = useState({ ok: 10, good: 30, excellent: 60 });
   
@@ -148,6 +148,8 @@ export const ProjectPage = () => {
           <div style={{ display: 'grid', gap: '1.5rem' }}>
             {projectGoals.map(goal => {
               const progressPct = Math.min(100, Math.round((goal.current / goal.target) * 100)) || 0;
+              const goalTasks = tasks.filter(t => t.goalId === goal.id);
+
               return (
                 <div key={goal.id} className="glass-panel" style={{ padding: '1.5rem', borderLeft: goal.isCompleted ? '4px solid var(--success)' : '4px solid var(--accent-primary)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -163,9 +165,28 @@ export const ProjectPage = () => {
                       Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR')}
                     </p>
                   )}
-                  <div className="progress-bar" style={{ height: '12px', background: 'rgba(0,0,0,0.3)' }}>
+                  <div className="progress-bar" style={{ height: '12px', background: 'rgba(0,0,0,0.3)', marginBottom: goalTasks.length > 0 ? '1.5rem' : '0' }}>
                     <div className="progress-fill" style={{ width: `${progressPct}%`, background: goal.isCompleted ? 'var(--success)' : 'var(--accent-gradient)' }}></div>
                   </div>
+
+                  {goalTasks.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {goalTasks.map(task => (
+                        <div key={task.id} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', padding: '0.8rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                          <button 
+                            className="btn-icon" 
+                            style={{ width: '24px', height: '24px', background: task.completed ? 'var(--success)' : 'transparent', border: task.completed ? 'none' : '1px solid var(--text-secondary)' }}
+                            onClick={() => toggleTaskComplete(task.id)}
+                          >
+                            {task.completed && <CheckCircle size={14} color="#000" />}
+                          </button>
+                          <span style={{ fontSize: '0.95rem', color: task.completed ? 'var(--text-secondary)' : '#fff', textDecoration: task.completed ? 'line-through' : 'none' }}>
+                            {task.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}

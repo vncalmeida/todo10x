@@ -88,10 +88,11 @@ export const TaskProvider = ({ children }) => {
     setProjects(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
   };
 
-  const addTask = (projectId, title, date) => {
+  const addTask = (projectId, title, date, goalId = null) => {
     const newTask = {
       id: Date.now().toString() + Math.random(),
       projectId,
+      goalId,
       title,
       completed: false,
       date: date || new Date().toISOString().split('T')[0]
@@ -132,6 +133,20 @@ export const TaskProvider = ({ children }) => {
               return p;
             });
           });
+
+          if (task.goalId) {
+            setGoals(currentGoals => {
+              return currentGoals.map(g => {
+                 if (g.id === task.goalId) {
+                    const completedForGoal = currentTasks.filter(t => t.goalId === g.id && t.completed).length;
+                    const isCompleted = completedForGoal >= g.target;
+                    if (isCompleted && !g.isCompleted) setTimeout(() => triggerConfetti(), 300);
+                    return { ...g, current: completedForGoal, isCompleted };
+                 }
+                 return g;
+              });
+            });
+          }
         }
         return currentTasks;
       });
@@ -177,11 +192,11 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
-  const acceptSuggestion = (sugId) => {
-    const sug = suggestions.find(s => s.id === sugId);
-    if (sug) {
-      addTask(sug.projectId, sug.title, new Date().toISOString().split('T')[0]);
-      setSuggestions(prev => prev.filter(s => s.id !== sugId));
+  const acceptSuggestion = (id) => {
+    const suggestion = suggestions.find(s => s.id === id);
+    if (suggestion) {
+      addTask(suggestion.projectId, suggestion.title, null, suggestion.goalId);
+      setSuggestions(prev => prev.filter(s => s.id !== id));
     }
   };
 
@@ -192,17 +207,30 @@ export const TaskProvider = ({ children }) => {
   const clearSuggestions = () => setSuggestions([]);
   const clearPendingTasks = () => setTasks(prev => prev.filter(t => t.completed));
 
-  const addGoal = (projectId, title, target, deadline) => {
+  const addGoal = (projectId, title, target, deadline, tasksArray = []) => {
+    const goalId = Date.now().toString() + Math.random().toString().slice(2, 6);
     const newGoal = {
-      id: Date.now().toString(),
+      id: goalId,
       projectId,
       title,
-      target: parseInt(target) || 1,
+      target: tasksArray.length > 0 ? tasksArray.length : (parseInt(target) || 1),
       current: 0,
       deadline: deadline || '',
       isCompleted: false
     };
     setGoals(prev => [...prev, newGoal]);
+
+    if (tasksArray && tasksArray.length > 0) {
+      const newTasks = tasksArray.map(tTitle => ({
+        id: Date.now().toString() + Math.random(),
+        projectId,
+        goalId,
+        title: tTitle,
+        completed: false,
+        date: new Date().toISOString().split('T')[0]
+      }));
+      setTasks(prev => [...prev, ...newTasks]);
+    }
   };
 
   const updateGoalProgress = (goalId, current) => {
@@ -251,6 +279,7 @@ export const TaskProvider = ({ children }) => {
           setSuggestions(prev => [...prev, {
             id: Date.now().toString() + Math.random(),
             projectId,
+            goalId: action.goalId,
             title: action.title
           }]);
         }
