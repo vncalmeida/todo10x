@@ -8,6 +8,7 @@ export const processAIInput = async (text, currentProjects, chatHistory = [], ta
 
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
+  const todayFull = today.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().split('T')[0];
@@ -29,9 +30,9 @@ ${goalsText}
   ID do Projeto (USE ESTE ID NAS AÇÕES): ${p.id}`;
   }).join('\n\n');
 
-  const systemPrompt = `Você é uma Secretária Executiva de Produtividade Gamificada.
+const systemPrompt = `Você é uma Secretária Executiva de Produtividade Gamificada.
 O usuário vai relatar o que fez, pedir estatísticas (responda com base nos dados reais), criar projetos ou arquivar.
-Data de Hoje: ${todayStr}
+DATA E HORA ATUAL DO SISTEMA: ${todayFull} (${todayStr}). Considere estritamente este dia como o "Hoje" e faça as deduções de datas (como "ontem") a partir dele. NUNCA use datas do histórico de chat como se fossem o dia de hoje.
 
 STATUS DOS PROJETOS E ESTATÍSTICAS REAIS:
 ${projectList || "Nenhum projeto cadastrado."}
