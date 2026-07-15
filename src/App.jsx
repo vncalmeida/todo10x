@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useTaskContext } from './context/TaskContext';
 import { BrainCircuit, Menu } from 'lucide-react';
 import { Home } from './pages/Home';
@@ -8,6 +8,7 @@ import { GlobalHistory } from './pages/GlobalHistory';
 import { QuotesPage } from './pages/QuotesPage';
 import { StatsPage } from './pages/StatsPage';
 import { TasksPage } from './pages/TasksPage';
+import { AiTimerPage } from './pages/AiTimerPage';
 import { ChatPanel } from './components/ChatPanel';
 import { Sidebar } from './components/Sidebar';
 import './App.css';
@@ -15,6 +16,7 @@ import './App.css';
 function App() {
   const { isLoaded } = useTaskContext();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
 
   if (!isLoaded) {
     return (
@@ -47,9 +49,10 @@ function App() {
           <Route path="/quotes" element={<QuotesPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/ai-timer" element={<AiTimerPage />} />
         </Routes>
       </div>
-      <ChatPanel />
+      {location.pathname !== '/ai-timer' && <ChatPanel />}
     </div>
   );
 }

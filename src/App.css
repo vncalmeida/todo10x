@@ -564,7 +564,7 @@ h2 {
     padding: 1rem;
     gap: 1rem;
   }
-  .project-card {
+  .project-card, .pomodoro-container {
     padding: 1rem;
   }
   .new-task-container {

@@ -37,6 +37,10 @@ export const Sidebar = ({ isOpen, onClose }) => {
             <BarChart2 size={20} />
             <span>Estatísticas</span>
           </NavLink>
+          <NavLink to="/ai-timer" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+            <BrainCircuit size={20} />
+            <span>Foco + IA</span>
+          </NavLink>
         </nav>
       </aside>
     </>
