@@ -1,8 +1,8 @@
 import { useTaskContext } from '../context/TaskContext';
-import { BarChart2, Flame, Clock, Trophy } from 'lucide-react';
+import { BarChart2, Flame, Clock, Trophy, Target, CheckCircle } from 'lucide-react';
 
 export const StatsPage = () => {
-  const { timeLogs, projects } = useTaskContext();
+  const { timeLogs, projects, goals } = useTaskContext();
   
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -90,6 +90,23 @@ export const StatsPage = () => {
     if (minutes < 120) return 'rgba(0, 230, 118, 0.8)';
     return 'rgba(0, 230, 118, 1)'; // super produtivo
   };
+
+  // Ranking de Projetos (Tempo Investido)
+  const projectTimeMap = {};
+  logsThisYear.forEach(l => {
+    if (!projectTimeMap[l.projectId]) projectTimeMap[l.projectId] = 0;
+    projectTimeMap[l.projectId] += l.durationInMinutes;
+  });
+  const projectLeaderboard = Object.entries(projectTimeMap)
+    .map(([id, mins]) => {
+      const p = projects.find(proj => proj.id === id);
+      return { id, name: p ? p.name : 'Projeto Desconhecido', minutes: mins };
+    })
+    .sort((a, b) => b.minutes - a.minutes);
+  const maxProjectMins = projectLeaderboard.length > 0 ? projectLeaderboard[0].minutes : 1;
+
+  // Metas Cumpridas
+  const completedGoals = goals.filter(g => g.isCompleted || g.current >= g.target);
 
   return (
     <div className="app-container animate-fade-in" style={{ paddingBottom: '4rem' }}>
@@ -193,6 +210,67 @@ export const StatsPage = () => {
                 </div>
               )
             })}
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          {/* Ranking de Projetos */}
+          <div className="glass-panel" style={{ padding: '2rem' }}>
+            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Target size={24} color="var(--accent-primary)" /> Tempo por Projeto
+            </h2>
+            {projectLeaderboard.length === 0 ? (
+              <p style={{ color: 'var(--text-secondary)' }}>Nenhum projeto trabalhado neste ano.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                {projectLeaderboard.map((proj, idx) => {
+                  const pct = Math.max(5, Math.round((proj.minutes / maxProjectMins) * 100));
+                  const hours = Math.floor(proj.minutes / 60);
+                  const mins = proj.minutes % 60;
+                  return (
+                    <div key={proj.id}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.95rem' }}>
+                        <span style={{ fontWeight: idx === 0 ? 'bold' : 'normal', color: idx === 0 ? 'var(--accent-primary)' : '#fff' }}>
+                          {idx + 1}. {proj.name}
+                        </span>
+                        <span style={{ color: 'var(--text-secondary)' }}>{hours > 0 ? `${hours}h ${mins}m` : `${mins}m`}</span>
+                      </div>
+                      <div className="progress-bar" style={{ height: '8px', background: 'rgba(255,255,255,0.05)' }}>
+                        <div className="progress-fill" style={{ width: `${pct}%`, background: idx === 0 ? 'var(--accent-gradient)' : 'var(--glass-border)' }}></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Mural de Metas Cumpridas */}
+          <div className="glass-panel" style={{ padding: '2rem' }}>
+            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <CheckCircle size={24} color="var(--success)" /> Mural de Metas Concluídas
+            </h2>
+            {completedGoals.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-secondary)' }}>
+                <CheckCircle size={48} color="rgba(255,255,255,0.05)" style={{ marginBottom: '1rem' }} />
+                <p>Nenhuma meta numérica concluída ainda.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {completedGoals.map(goal => {
+                  const p = projects.find(proj => proj.id === goal.projectId);
+                  return (
+                    <div key={goal.id} style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: 'rgba(0, 230, 118, 0.05)', padding: '1rem', borderRadius: '12px', borderLeft: '3px solid var(--success)' }}>
+                      <Trophy size={20} color="var(--success)" />
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#fff' }}>{goal.title}</h4>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{p ? p.name : 'Projeto Desconhecido'}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
