@@ -41,7 +41,7 @@ export const ChatInterface = ({ style }) => {
           <div key={m.id} style={{ 
             alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
             background: m.role === 'user' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
-            color: '#fff',
+            color: m.role === 'user' ? '#000' : '#fff',
             padding: '0.8rem 1rem', 
             borderRadius: '12px', 
             borderBottomRightRadius: m.role === 'user' ? '2px' : '12px',
@@ -97,7 +97,7 @@ export const ChatInterface = ({ style }) => {
           style={{ flex: 1, padding: '0.8rem 1rem', borderRadius: '24px', border: '1px solid var(--glass-border)', background: 'var(--glass-bg)', color: '#fff', outline: 'none' }}
         />
         <button onClick={send} disabled={isProcessing} style={{ background: 'var(--accent-gradient)', border: 'none', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', opacity: isProcessing ? 0.5 : 1 }}>
-          <Send size={18} color="#fff" style={{ marginLeft: '2px' }} />
+          <Send size={18} color="#000" style={{ marginLeft: '2px' }} />
         </button>
       </div>
     </div>
