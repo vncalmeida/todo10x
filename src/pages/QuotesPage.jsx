@@ -43,7 +43,7 @@ export const QuotesPage = () => {
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '2rem' }}>Nenhuma frase cadastrada.</p>
         ) : (
           quotes.map(q => (
-            <div key={q.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={q.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '16px' }}>
               <p style={{ fontSize: '1.1rem', fontStyle: 'italic', color: '#fff' }}>"{q.text}"</p>
               <button className="btn-icon" onClick={() => removeQuote(q.id)}>
                 <Trash2 size={18} color="var(--danger)" />

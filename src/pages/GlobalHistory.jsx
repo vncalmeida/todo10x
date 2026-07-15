@@ -53,12 +53,12 @@ export const GlobalHistory = () => {
                     const proj = projects.find(p => p.id === item.projectId);
                     return (
                       <div key={item.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', gap: '1.2rem', alignItems: 'center', borderLeft: item.type === 'victory' ? '3px solid gold' : '3px solid var(--success)' }}>
-                        {item.type === 'victory' ? <Trophy size={22} color="gold" style={{ flexShrink: 0 }} /> : <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />}
+                        {item.type === 'victory' ? <Trophy size={22} color="#ffffff" style={{ flexShrink: 0 }} /> : <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />}
                         <div>
                           <span style={{ fontSize: '1rem', color: '#fff' }}>{item.title}</span>
                           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem', alignItems: 'center' }}>
                              {proj && <span className="task-project-badge">{proj.name}</span>}
-                             {item.type === 'victory' && <span style={{ fontSize: '0.75rem', color: 'gold', textTransform: 'uppercase', letterSpacing: '1px' }}>Vitória</span>}
+                             {item.type === 'victory' && <span style={{ fontSize: '0.75rem', color: "#ffffff", textTransform: 'uppercase', letterSpacing: '1px' }}>Vitória</span>}
                           </div>
                         </div>
                       </div>

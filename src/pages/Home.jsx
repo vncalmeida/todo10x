@@ -134,7 +134,7 @@ export const Home = () => {
                           <span className="task-title">{task.title}</span>
                           <div className="task-meta">
                             {project ? <span className="task-project-badge">{project.name}</span> : <span className="task-project-badge" style={{background: 'rgba(255,255,255,0.1)', color: '#fff'}}>Geral</span>}
-                            {goal && <span className="task-project-badge" style={{background: 'rgba(255, 165, 0, 0.2)', color: 'gold', border: '1px solid gold'}}>🎯 {goal.title}</span>}
+                            {goal && <span className="task-project-badge" style={{background: 'rgba(255,255,255,0.1)', color: "#ffffff", border: '1px solid gold'}}>🎯 {goal.title}</span>}
                             <span className="task-date-badge" style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}>
                               {task.date}
                             </span>
