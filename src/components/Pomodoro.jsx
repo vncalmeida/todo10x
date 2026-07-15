@@ -30,6 +30,20 @@ export const Pomodoro = () => {
   };
 
   useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (status === 'working') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [status]);
+
+  useEffect(() => {
     let interval = null;
     if (status === 'working' && endTime) {
       interval = setInterval(() => {
