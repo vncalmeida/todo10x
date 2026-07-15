@@ -23,7 +23,7 @@ export const QuotesPage = () => {
 
       <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2rem' }}>
         <h3 style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Adicionar nova frase</h3>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="input-group">
           <input 
             type="text" 
             value={newQuote}

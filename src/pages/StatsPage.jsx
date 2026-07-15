@@ -122,7 +122,7 @@ export const StatsPage = () => {
       <main className="main-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         
         {/* KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
+        <div className="kpi-grid">
           <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
             <div style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '1rem', borderRadius: '12px' }}>
               <Clock size={32} color="var(--accent-primary)" />
@@ -213,7 +213,7 @@ export const StatsPage = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <div className="stats-grid">
           {/* Ranking de Projetos */}
           <div className="glass-panel" style={{ padding: '2rem' }}>
             <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
