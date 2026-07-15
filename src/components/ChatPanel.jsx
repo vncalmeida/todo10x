@@ -86,10 +86,11 @@ export const ChatPanel = () => {
             borderBottomLeftRadius: m.role === 'assistant' ? '2px' : '12px',
             maxWidth: '85%',
             fontSize: '0.95rem',
-            lineHeight: '1.4'
-          }}>
-            {m.text}
-          </div>
+            lineHeight: '1.5',
+            whiteSpace: 'pre-wrap'
+          }}
+          dangerouslySetInnerHTML={{ __html: m.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
+          />
         ))}
 
         {suggestions.length > 0 && (
