@@ -524,3 +524,43 @@ h2 {
 .btn-small:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-container {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .project-card {
+    padding: 1rem;
+  }
+  .new-task-container {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .new-task-container select {
+    width: 100% !important;
+  }
+}
+
+.new-task-container {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: center;
+}

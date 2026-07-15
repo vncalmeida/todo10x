@@ -99,7 +99,7 @@ export const Home = () => {
               )}
             </section>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="stats-grid">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div className="clickable-chart" onClick={() => navigate('/stats')} style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform='scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform='scale(1)'} title="Ver estatísticas do ano">
                   <StreakCalendar />

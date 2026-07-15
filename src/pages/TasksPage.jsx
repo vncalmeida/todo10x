@@ -184,7 +184,7 @@ export const TasksPage = () => {
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
+        <div className="new-task-container">
           <input 
             type="text" 
             value={newTaskTitle}
