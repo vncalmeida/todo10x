@@ -111,53 +111,6 @@ export const Home = () => {
               </div>
             </div>
 
-            <section className="tasks-section" style={{ paddingBottom: '5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2 style={{ margin: 0 }}>Próximos Passos</h2>
-                <button onClick={clearPendingTasks} className="btn-small" style={{ background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>Limpar</button>
-              </div>
-              <div className="task-list">
-                {tasks.filter(t => !t.completed).length === 0 ? (
-                  <p style={{ color: 'var(--text-secondary)', padding: '1rem', background: 'var(--glass-bg)', borderRadius: '12px' }}>
-                    Nenhuma pendência! Peça ideias para a IA no chat flutuante.
-                  </p>
-                ) : (
-                  tasks.filter(t => !t.completed).map(task => {
-                    const project = projects.find(p => p.id === task.projectId);
-                    const goal = task.goalId ? goals.find(g => g.id === task.goalId) : null;
-                    return (
-                      <div key={task.id} className="task-item glass-panel">
-                        <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
-                          <Circle size={24} color="var(--text-secondary)" />
-                        </button>
-                        <div className="task-content">
-                          <span className="task-title">{task.title}</span>
-                          <div className="task-meta">
-                            {project ? <span className="task-project-badge">{project.name}</span> : <span className="task-project-badge" style={{background: 'rgba(255,255,255,0.1)', color: '#fff'}}>Geral</span>}
-                            {goal && <span className="task-project-badge" style={{background: 'rgba(255,255,255,0.1)', color: "#ffffff", border: '1px solid gold'}}>🎯 {goal.title}</span>}
-                            <span className="task-date-badge" style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}>
-                              {task.date}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-              <div style={{ marginTop: '1rem' }}>
-                <input 
-                  type="text" 
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  onKeyDown={handleAddManualTask}
-                  placeholder="Adicionar tarefa avulsa + Enter..." 
-                  className="time-input"
-                  style={{ width: '100%', padding: '0.8rem 1rem' }}
-                />
-              </div>
-            </section>
-
           </div>
           
           <div className="right-column">
