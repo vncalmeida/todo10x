@@ -4,12 +4,17 @@ import { ArrowLeft, History, Trophy, CheckCircle } from 'lucide-react';
 
 export const GlobalHistory = () => {
   const navigate = useNavigate();
-  const { projects, tasks, victories } = useTaskContext();
+  const { projects, tasks, victories, timeLogs } = useTaskContext();
   
   const allTasks = tasks.filter(t => t.completed).map(t => ({ ...t, type: 'task' }));
   const allVictories = victories.map(v => ({ ...v, type: 'victory' }));
+  const allTimeLogs = timeLogs.map(l => ({ 
+    ...l, 
+    type: 'time', 
+    title: `Sessão de Foco: ${l.durationInMinutes >= 60 ? Math.floor(l.durationInMinutes / 60) + 'h ' : ''}${l.durationInMinutes % 60 > 0 ? (l.durationInMinutes % 60) + 'm' : ''}`.trim()
+  }));
   
-  const allEvents = [...allTasks, ...allVictories];
+  const allEvents = [...allTasks, ...allVictories, ...allTimeLogs];
   
   const grouped = allEvents.reduce((acc, item) => {
     if (!acc[item.date]) acc[item.date] = [];
@@ -52,13 +57,14 @@ export const GlobalHistory = () => {
                   {grouped[date].map(item => {
                     const proj = projects.find(p => p.id === item.projectId);
                     return (
-                      <div key={item.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', gap: '1.2rem', alignItems: 'center', borderLeft: item.type === 'victory' ? '3px solid gold' : '3px solid var(--success)' }}>
-                        {item.type === 'victory' ? <Trophy size={22} color="gold" style={{ flexShrink: 0 }} /> : <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />}
+                      <div key={item.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', gap: '1.2rem', alignItems: 'center', borderLeft: item.type === 'victory' ? '3px solid gold' : item.type === 'time' ? '3px solid var(--accent-primary)' : '3px solid var(--success)' }}>
+                        {item.type === 'victory' ? <Trophy size={22} color="gold" style={{ flexShrink: 0 }} /> : item.type === 'time' ? <History size={22} color="var(--accent-primary)" style={{ flexShrink: 0 }} /> : <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />}
                         <div>
                           <span style={{ fontSize: '1rem', color: '#fff' }}>{item.title}</span>
                           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem', alignItems: 'center' }}>
-                             {proj && <span className="task-project-badge">{proj.name}</span>}
+                             {proj && <span className="task-project-badge" style={{ borderColor: proj.color || 'var(--glass-border)', color: proj.color || '#fff' }}>{proj.name}</span>}
                              {item.type === 'victory' && <span style={{ fontSize: '0.75rem', color: "gold", textTransform: 'uppercase', letterSpacing: '1px' }}>Vitória</span>}
+                             {item.type === 'time' && <span style={{ fontSize: '0.75rem', color: "var(--accent-primary)", textTransform: 'uppercase', letterSpacing: '1px' }}>Tempo Registrado</span>}
                           </div>
                         </div>
                       </div>

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
-import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus, Trash2, History } from 'lucide-react';
 import { useState } from 'react';
 import { StreakCalendar } from '../components/StreakCalendar';
 
@@ -59,8 +59,13 @@ export const ProjectPage = () => {
   // Combina tarefas concluídas e vitórias diárias
   const projectTasks = tasks.filter(t => t.projectId === id && t.completed).map(t => ({ ...t, type: 'task' }));
   const projectVictories = victories.filter(v => v.projectId === id).map(v => ({ ...v, type: 'victory' }));
+  const projectTimeLogs = timeLogs.filter(l => l.projectId === id).map(l => ({ 
+    ...l, 
+    type: 'time', 
+    title: `Sessão de Foco: ${l.durationInMinutes >= 60 ? Math.floor(l.durationInMinutes / 60) + 'h ' : ''}${l.durationInMinutes % 60 > 0 ? (l.durationInMinutes % 60) + 'm' : ''}`.trim()
+  }));
   
-  const allEvents = [...projectTasks, ...projectVictories];
+  const allEvents = [...projectTasks, ...projectVictories, ...projectTimeLogs];
   
   const grouped = allEvents.reduce((acc, item) => {
     if (!acc[item.date]) acc[item.date] = [];
@@ -303,15 +308,14 @@ export const ProjectPage = () => {
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {grouped[date].map(item => (
-                    <div key={item.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', gap: '1.2rem', alignItems: 'center', transition: 'transform 0.2s', borderLeft: item.type === 'victory' ? '3px solid gold' : '3px solid var(--success)' }}>
-                      {item.type === 'victory' ? (
-                        <Trophy size={22} color="gold" style={{ flexShrink: 0 }} />
-                      ) : (
-                        <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />
-                      )}
+                    <div key={item.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', gap: '1.2rem', alignItems: 'center', borderLeft: item.type === 'victory' ? '3px solid gold' : item.type === 'time' ? '3px solid var(--accent-primary)' : '3px solid var(--success)' }}>
+                      {item.type === 'victory' ? <Trophy size={22} color="gold" style={{ flexShrink: 0 }} /> : item.type === 'time' ? <History size={22} color="var(--accent-primary)" style={{ flexShrink: 0 }} /> : <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />}
                       <div>
-                        <span style={{ fontSize: '1rem', color: '#fff', lineHeight: '1.4' }}>{item.title}</span>
-                        {item.type === 'victory' && <span style={{ display: 'block', fontSize: '0.75rem', color: "gold", marginTop: '0.3rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Relato de Vitória</span>}
+                        <span style={{ fontSize: '1rem', color: '#fff' }}>{item.title}</span>
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem', alignItems: 'center' }}>
+                           {item.type === 'victory' && <span style={{ fontSize: '0.75rem', color: "gold", textTransform: 'uppercase', letterSpacing: '1px' }}>Vitória</span>}
+                           {item.type === 'time' && <span style={{ fontSize: '0.75rem', color: "var(--accent-primary)", textTransform: 'uppercase', letterSpacing: '1px' }}>Tempo Registrado</span>}
+                        </div>
                       </div>
                     </div>
                   ))}

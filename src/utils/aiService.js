@@ -84,6 +84,7 @@ Ações JSON possíveis e seus campos:
 10. "UPDATE_GOAL": Progresso. Campos: "type": "UPDATE_GOAL", "goalId", "current"
 11. "LOG_VICTORY": Registra vitória. Campos: "type": "LOG_VICTORY", "title", "projectId"
 12. "LOG_PAST_TIME": Registra tempo retroativo. Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes", "date"
+    (MUITO IMPORTANTE: Se o usuário disser que trabalhou num projeto e detalhar o que fez, você DEVE retornar TAMBÉM uma ação "LOG_VICTORY" com a descrição, para que isso apareça no diário dele!)
 
 **Exemplo de Resposta:**
 Entendido, chefe. Criei o projeto de Finanças e movi a tarefa de imposto para ele.
