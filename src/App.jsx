@@ -5,6 +5,7 @@ import { Home } from './pages/Home';
 import { ProjectPage } from './pages/ProjectPage';
 import { GlobalHistory } from './pages/GlobalHistory';
 import { QuotesPage } from './pages/QuotesPage';
+import { StatsPage } from './pages/StatsPage';
 import { ChatPanel } from './components/ChatPanel';
 import { Sidebar } from './components/Sidebar';
 import './App.css';
@@ -32,6 +33,7 @@ function App() {
           <Route path="/project/:id" element={<ProjectPage />} />
           <Route path="/history" element={<GlobalHistory />} />
           <Route path="/quotes" element={<QuotesPage />} />
+          <Route path="/stats" element={<StatsPage />} />
         </Routes>
       </div>
       <ChatPanel />

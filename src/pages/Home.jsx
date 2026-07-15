@@ -101,10 +101,14 @@ export const Home = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <StreakCalendar />
+                <div className="clickable-chart" onClick={() => navigate('/stats')} style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform='scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform='scale(1)'} title="Ver estatísticas do ano">
+                  <StreakCalendar />
+                </div>
                 <MoodTracker />
               </div>
-              <HoursChart />
+              <div className="clickable-chart" onClick={() => navigate('/stats')} style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform='scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform='scale(1)'} title="Ver estatísticas do ano">
+                <HoursChart />
+              </div>
             </div>
 
             <section className="tasks-section" style={{ paddingBottom: '5rem' }}>

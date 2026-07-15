@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { BrainCircuit, Home, History, Quote } from 'lucide-react';
+import { BrainCircuit, Home, History, Quote, BarChart2 } from 'lucide-react';
 
 export const Sidebar = () => {
   return (
@@ -21,6 +21,10 @@ export const Sidebar = () => {
         <NavLink to="/quotes" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
           <Quote size={20} />
           <span>Minhas Frases</span>
+        </NavLink>
+        <NavLink to="/stats" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+          <BarChart2 size={20} />
+          <span>Estatísticas</span>
         </NavLink>
       </nav>
     </aside>
