@@ -65,16 +65,14 @@ export const Home = () => {
               
               <div className="projects-grid">
                 {activeProjects.map(project => (
-                  <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)}>
-                    <h3 style={{ marginBottom: project.description ? '0.5rem' : '1rem' }}>{project.name}</h3>
+                  <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <h3 style={{ marginBottom: project.description ? '0.5rem' : '0' }}>{project.name}</h3>
                     {project.description && (
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {project.description}
                       </p>
                     )}
-                    <div className="progress-bar" style={{ marginTop: 'auto' }}>
-                      <div className="progress-fill" style={{ width: `${project.progress}%`, background: project.progress === 100 ? 'var(--success)' : 'var(--accent-gradient)' }}></div>
-                    </div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', marginTop: 'auto', textTransform: 'uppercase', fontWeight: 'bold' }}>Acessar Projeto ➔</span>
                   </div>
                 ))}
                 {activeProjects.length === 0 && (
@@ -93,11 +91,8 @@ export const Home = () => {
               {showArchived && (
                 <div className="projects-grid" style={{ marginTop: '1rem', opacity: 0.6 }}>
                   {archivedProjects.map(project => (
-                    <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)}>
-                      <h3 style={{ marginBottom: project.description ? '0.5rem' : '1rem' }}>{project.name} <span style={{ fontSize: '0.7rem', border: '1px solid var(--text-secondary)', padding: '2px 6px', borderRadius: '4px', marginLeft: '0.5rem' }}>ARQUIVADO</span></h3>
-                      <div className="progress-bar" style={{ marginTop: 'auto' }}>
-                        <div className="progress-fill" style={{ width: `${project.progress}%`, background: 'var(--text-secondary)' }}></div>
-                      </div>
+                    <div key={project.id} className="project-card glass-panel clickable" onClick={() => navigate(`/project/${project.id}`)} style={{ display: 'flex', flexDirection: 'column' }}>
+                      <h3 style={{ marginBottom: '0' }}>{project.name} <span style={{ fontSize: '0.7rem', border: '1px solid var(--text-secondary)', padding: '2px 6px', borderRadius: '4px', marginLeft: '0.5rem' }}>ARQUIVADO</span></h3>
                     </div>
                   ))}
                 </div>

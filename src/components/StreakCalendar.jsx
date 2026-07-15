@@ -1,7 +1,7 @@
 import { useTaskContext } from '../context/TaskContext';
 import { Flame } from 'lucide-react';
 
-export const StreakCalendar = () => {
+export const StreakCalendar = ({ projectId }) => {
   const { timeLogs, projects } = useTaskContext();
   
   const today = new Date();
@@ -23,10 +23,20 @@ export const StreakCalendar = () => {
     const dateStr = d.toISOString().split('T')[0];
     
     let met = false;
-    projects.forEach(p => {
-       const worked = timeLogs.filter(l => l.date === dateStr && l.projectId === p.id).reduce((a,b) => a+b.durationInMinutes, 0);
-       if (worked >= p.dailyGoal) met = true;
-    });
+    const evaluateMet = (proj, dStr) => {
+       const worked = timeLogs.filter(l => l.date === dStr && l.projectId === proj.id).reduce((a,b) => a+b.durationInMinutes, 0);
+       const target = proj.timeTiers?.ok || proj.dailyGoal || 10;
+       return worked >= target;
+    };
+
+    if (projectId) {
+       const p = projects.find(proj => proj.id === projectId);
+       if (p && evaluateMet(p, dateStr)) met = true;
+    } else {
+       projects.forEach(p => {
+          if (evaluateMet(p, dateStr)) met = true;
+       });
+    }
     
     currentWeek[currentDayOfWeek] = { date: i, dateStr, met, isToday: dateStr === today.toISOString().split('T')[0] };
     
@@ -45,7 +55,7 @@ export const StreakCalendar = () => {
     <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h3 style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Flame color="var(--accent-primary)" size={20} /> Constância do Mês
+          <Flame color="var(--accent-primary)" size={20} /> Constância {projectId ? 'do Projeto' : 'Geral'}
         </h3>
       </div>
       
@@ -66,10 +76,21 @@ export const StreakCalendar = () => {
                   {isMet && day.date < daysInMonth && (() => {
                      const nextD = new Date(year, month, day.date + 1).toISOString().split('T')[0];
                      let nextMet = false;
-                     projects.forEach(p => {
-                       const worked = timeLogs.filter(l => l.date === nextD && l.projectId === p.id).reduce((a,b) => a+b.durationInMinutes, 0);
-                       if (worked >= p.dailyGoal) nextMet = true;
-                     });
+                     
+                     const evaluateMetNext = (proj, dStr) => {
+                        const worked = timeLogs.filter(l => l.date === dStr && l.projectId === proj.id).reduce((a,b) => a+b.durationInMinutes, 0);
+                        const target = proj.timeTiers?.ok || proj.dailyGoal || 10;
+                        return worked >= target;
+                     };
+
+                     if (projectId) {
+                        const p = projects.find(proj => proj.id === projectId);
+                        if (p && evaluateMetNext(p, nextD)) nextMet = true;
+                     } else {
+                        projects.forEach(p => {
+                           if (evaluateMetNext(p, nextD)) nextMet = true;
+                        });
+                     }
                      if (nextMet && dIdx < 6) {
                         return <div style={{ position: 'absolute', right: '-20%', top: '50%', width: '140%', height: '4px', background: 'var(--success)', zIndex: 1, transform: 'translateY(-50%)' }} />
                      }

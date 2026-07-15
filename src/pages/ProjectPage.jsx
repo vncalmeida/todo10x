@@ -1,14 +1,19 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
-import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag } from 'lucide-react';
+import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
+import { StreakCalendar } from '../components/StreakCalendar';
 
 export const ProjectPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects, tasks, victories, timeLogs, goals, updateProject } = useTaskContext();
+  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, updateGoalProgress } = useTaskContext();
   const [isEditingTiers, setIsEditingTiers] = useState(false);
   const [tiers, setTiers] = useState({ ok: 10, good: 30, excellent: 60 });
+  
+  const [isCreatingGoal, setIsCreatingGoal] = useState(false);
+  const [newGoalTitle, setNewGoalTitle] = useState('');
+  const [newGoalTarget, setNewGoalTarget] = useState('');
   
   const project = projects.find(p => p.id === id);
   
@@ -21,6 +26,15 @@ export const ProjectPage = () => {
   const handleSaveTiers = () => {
     updateProject(id, { timeTiers: tiers });
     setIsEditingTiers(false);
+  };
+
+  const handleCreateGoal = () => {
+    if (newGoalTitle.trim() && newGoalTarget) {
+      addGoal(id, newGoalTitle.trim(), newGoalTarget, '');
+      setNewGoalTitle('');
+      setNewGoalTarget('');
+      setIsCreatingGoal(false);
+    }
   };
 
   const currentTiers = project.timeTiers || { ok: 10, good: 30, excellent: 60 };
@@ -108,9 +122,29 @@ export const ProjectPage = () => {
 
       {projectGoals.length > 0 && (
         <div style={{ marginBottom: '4rem' }}>
-          <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
-            <Flag size={24} color="var(--accent-primary)" /> Metas Numéricas
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
+              <Flag size={24} color="var(--accent-primary)" /> Metas Numéricas
+            </h2>
+            {!isCreatingGoal && (
+               <button className="btn-small" onClick={() => setIsCreatingGoal(true)} style={{ background: 'transparent', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)' }}>
+                 <Plus size={16} /> Nova Meta
+               </button>
+            )}
+          </div>
+          
+          {isCreatingGoal && (
+             <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+               <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Criar Meta Manualmente</h3>
+               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                 <input type="text" placeholder="Título (ex: 22 Aulas)" value={newGoalTitle} onChange={e => setNewGoalTitle(e.target.value)} className="time-input" style={{ flex: 2 }} />
+                 <input type="number" placeholder="Alvo (ex: 22)" value={newGoalTarget} onChange={e => setNewGoalTarget(e.target.value)} className="time-input" style={{ flex: 1 }} />
+                 <button className="btn-small" onClick={handleCreateGoal} style={{ background: 'var(--accent-gradient)', height: '42px' }}>Criar</button>
+                 <button className="btn-small" onClick={() => setIsCreatingGoal(false)} style={{ background: 'transparent', border: '1px solid var(--glass-border)', height: '42px' }}>Cancelar</button>
+               </div>
+             </div>
+          )}
+
           <div style={{ display: 'grid', gap: '1.5rem' }}>
             {projectGoals.map(goal => {
               const progressPct = Math.min(100, Math.round((goal.current / goal.target) * 100)) || 0;
@@ -118,7 +152,11 @@ export const ProjectPage = () => {
                 <div key={goal.id} className="glass-panel" style={{ padding: '1.5rem', borderLeft: goal.isCompleted ? '4px solid var(--success)' : '4px solid var(--accent-primary)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1.2rem', color: goal.isCompleted ? 'var(--success)' : '#fff' }}>{goal.title}</h3>
-                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{goal.current} / {goal.target}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <button onClick={() => updateGoalProgress(goal.id, Math.max(0, goal.current - 1))} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}><Minus size={14} /></button>
+                      <span style={{ fontSize: '1.2rem', fontWeight: 'bold', width: '50px', textAlign: 'center' }}>{goal.current} / {goal.target}</span>
+                      <button onClick={() => updateGoalProgress(goal.id, goal.current + 1)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}><Plus size={14} /></button>
+                    </div>
                   </div>
                   {goal.deadline && (
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
@@ -134,6 +172,33 @@ export const ProjectPage = () => {
           </div>
         </div>
       )}
+
+      {projectGoals.length === 0 && (
+        <div style={{ marginBottom: '4rem', textAlign: 'center', padding: '2rem', background: 'var(--glass-bg)', borderRadius: '12px', border: '1px dashed var(--glass-border)' }}>
+          <Flag size={32} color="var(--text-secondary)" style={{ marginBottom: '1rem' }} />
+          <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Nenhuma Meta Específica</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Crie metas numéricas para acompanhar o seu progresso.</p>
+          
+          {isCreatingGoal ? (
+             <div style={{ maxWidth: '500px', margin: '0 auto', textAlign: 'left' }}>
+               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                 <input type="text" placeholder="Título (ex: 22 Aulas)" value={newGoalTitle} onChange={e => setNewGoalTitle(e.target.value)} className="time-input" style={{ flex: 2 }} />
+                 <input type="number" placeholder="Alvo (ex: 22)" value={newGoalTarget} onChange={e => setNewGoalTarget(e.target.value)} className="time-input" style={{ flex: 1 }} />
+                 <button className="btn-small" onClick={handleCreateGoal} style={{ background: 'var(--accent-gradient)', height: '42px' }}>Criar</button>
+                 <button className="btn-small" onClick={() => setIsCreatingGoal(false)} style={{ background: 'transparent', border: '1px solid var(--glass-border)', height: '42px' }}>Cancelar</button>
+               </div>
+             </div>
+          ) : (
+            <button className="btn-small" onClick={() => setIsCreatingGoal(true)} style={{ background: 'transparent', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', margin: '0 auto' }}>
+              <Plus size={16} /> Nova Meta Numérica
+            </button>
+          )}
+        </div>
+      )}
+
+      <div style={{ marginBottom: '2rem' }}>
+        <StreakCalendar projectId={id} />
+      </div>
 
       <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
         <Trophy size={24} color="gold" /> Linha do Tempo (Timeline)
