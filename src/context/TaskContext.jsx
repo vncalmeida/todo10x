@@ -115,8 +115,8 @@ export const TaskProvider = ({ children }) => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
-  const editTask = (taskId, newTitle) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, title: newTitle } : t));
+  const editTask = (taskId, updates) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
   };
 
   const toggleTaskComplete = (taskId) => {

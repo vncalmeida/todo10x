@@ -12,6 +12,7 @@ export const TasksPage = () => {
   const [newGoalTasksText, setNewGoalTasksText] = useState('');
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
+  const [editingTaskProjectId, setEditingTaskProjectId] = useState('');
   const navigate = useNavigate();
   
   const pendingTasks = tasks.filter(t => !t.completed);
@@ -47,14 +48,19 @@ export const TasksPage = () => {
   const handleStartEdit = (task) => {
     setEditingTaskId(task.id);
     setEditingTaskTitle(task.title);
+    setEditingTaskProjectId(task.projectId || '');
   };
 
   const handleSaveEdit = (taskId) => {
     if (editingTaskTitle.trim()) {
-      editTask(taskId, editingTaskTitle.trim());
+      editTask(taskId, { 
+        title: editingTaskTitle.trim(),
+        projectId: editingTaskProjectId === '' ? null : editingTaskProjectId 
+      });
     }
     setEditingTaskId(null);
     setEditingTaskTitle('');
+    setEditingTaskProjectId('');
   };
 
   return (
@@ -127,14 +133,24 @@ export const TasksPage = () => {
                   </button>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
                     {editingTaskId === task.id ? (
-                      <input 
-                        type="text" 
-                        value={editingTaskTitle} 
-                        onChange={(e) => setEditingTaskTitle(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
-                        autoFocus
-                        style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', width: '100%' }}
-                      />
+                      <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                        <input 
+                          type="text" 
+                          value={editingTaskTitle} 
+                          onChange={(e) => setEditingTaskTitle(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
+                          autoFocus
+                          style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', flex: 1 }}
+                        />
+                        <select
+                          value={editingTaskProjectId}
+                          onChange={(e) => setEditingTaskProjectId(e.target.value)}
+                          style={{ background: '#0a0a0a', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '0.85rem', width: '150px' }}
+                        >
+                          <option value="">Geral</option>
+                          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
+                      </div>
                     ) : (
                       <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
                     )}
@@ -249,14 +265,24 @@ export const TasksPage = () => {
                     </button>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
                       {editingTaskId === task.id ? (
-                        <input 
-                          type="text" 
-                          value={editingTaskTitle} 
-                          onChange={(e) => setEditingTaskTitle(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
-                          autoFocus
-                          style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', width: '100%' }}
-                        />
+                        <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                          <input 
+                            type="text" 
+                            value={editingTaskTitle} 
+                            onChange={(e) => setEditingTaskTitle(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
+                            autoFocus
+                            style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', flex: 1 }}
+                          />
+                          <select
+                            value={editingTaskProjectId}
+                            onChange={(e) => setEditingTaskProjectId(e.target.value)}
+                            style={{ background: '#0a0a0a', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '0.85rem', width: '150px' }}
+                          >
+                            <option value="">Geral</option>
+                            {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                          </select>
+                        </div>
                       ) : (
                         <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
                       )}
