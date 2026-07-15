@@ -1,17 +1,29 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
-import { ArrowLeft, Target, Trophy, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag } from 'lucide-react';
+import { useState } from 'react';
 
 export const ProjectPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects, tasks, victories, timeLogs } = useTaskContext();
+  const { projects, tasks, victories, timeLogs, goals, updateProject } = useTaskContext();
+  const [isEditingTiers, setIsEditingTiers] = useState(false);
+  const [tiers, setTiers] = useState({ ok: 10, good: 30, excellent: 60 });
   
   const project = projects.find(p => p.id === id);
   
   if (!project) {
     return <div style={{ padding: '2rem', color: '#fff' }}>Projeto não encontrado. <button onClick={() => navigate('/')}>Voltar</button></div>;
   }
+
+  const projectGoals = goals.filter(g => g.projectId === id);
+
+  const handleSaveTiers = () => {
+    updateProject(id, { timeTiers: tiers });
+    setIsEditingTiers(false);
+  };
+
+  const currentTiers = project.timeTiers || { ok: 10, good: 30, excellent: 60 };
 
   // Combina tarefas concluídas e vitórias diárias
   const projectTasks = tasks.filter(t => t.projectId === id && t.completed).map(t => ({ ...t, type: 'task' }));
@@ -47,18 +59,81 @@ export const ProjectPage = () => {
             <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--accent-primary)', margin: 0 }}>{timeString}</p>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginTop: '2rem' }}>
           <Target size={24} color="var(--accent-primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
           <div>
             <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem' }}>Meta Principal</h3>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '1rem' }}>{project.description || "Você ainda não definiu a grande meta deste projeto."}</p>
           </div>
         </div>
-        <div className="progress-bar" style={{ marginTop: '2.5rem', height: '8px', background: 'rgba(0,0,0,0.3)' }}>
-          <div className="progress-fill" style={{ width: `${project.progress}%`, background: project.progress === 100 ? 'var(--success)' : 'var(--accent-gradient)' }}></div>
+
+        <div style={{ marginTop: '2.5rem', paddingTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}><Clock size={20} color="var(--accent-primary)" /> Níveis de Tempo (Confetes)</h3>
+            {!isEditingTiers ? (
+              <button onClick={() => { setTiers(currentTiers); setIsEditingTiers(true); }} className="btn-icon" style={{ width: '32px', height: '32px' }}><Edit2 size={16} /></button>
+            ) : (
+              <button onClick={handleSaveTiers} className="btn-icon" style={{ background: 'var(--accent-gradient)', width: '32px', height: '32px' }}><Save size={16} /></button>
+            )}
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', textAlign: 'center' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>OK</span>
+              {isEditingTiers ? (
+                <input type="number" value={tiers.ok} onChange={e => setTiers({...tiers, ok: parseInt(e.target.value) || 0})} className="time-input" style={{ width: '100%', marginTop: '0.5rem', textAlign: 'center' }} />
+              ) : (
+                <h4 style={{ margin: '0.5rem 0 0 0', fontSize: '1.2rem' }}>{currentTiers.ok}m</h4>
+              )}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', textAlign: 'center' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Bom</span>
+              {isEditingTiers ? (
+                <input type="number" value={tiers.good} onChange={e => setTiers({...tiers, good: parseInt(e.target.value) || 0})} className="time-input" style={{ width: '100%', marginTop: '0.5rem', textAlign: 'center' }} />
+              ) : (
+                <h4 style={{ margin: '0.5rem 0 0 0', fontSize: '1.2rem', color: 'var(--accent-primary)' }}>{currentTiers.good}m</h4>
+              )}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
+              <span style={{ fontSize: '0.8rem', color: 'gold', textTransform: 'uppercase' }}>Excelente</span>
+              {isEditingTiers ? (
+                <input type="number" value={tiers.excellent} onChange={e => setTiers({...tiers, excellent: parseInt(e.target.value) || 0})} className="time-input" style={{ width: '100%', marginTop: '0.5rem', textAlign: 'center' }} />
+              ) : (
+                <h4 style={{ margin: '0.5rem 0 0 0', fontSize: '1.2rem', color: 'gold' }}>{currentTiers.excellent}m</h4>
+              )}
+            </div>
+          </div>
         </div>
-        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginTop: '0.8rem', textAlign: 'right' }}>Progresso de Tarefas: {project.progress}%</span>
       </div>
+
+      {projectGoals.length > 0 && (
+        <div style={{ marginBottom: '4rem' }}>
+          <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
+            <Flag size={24} color="var(--accent-primary)" /> Metas Numéricas
+          </h2>
+          <div style={{ display: 'grid', gap: '1.5rem' }}>
+            {projectGoals.map(goal => {
+              const progressPct = Math.min(100, Math.round((goal.current / goal.target) * 100)) || 0;
+              return (
+                <div key={goal.id} className="glass-panel" style={{ padding: '1.5rem', borderLeft: goal.isCompleted ? '4px solid var(--success)' : '4px solid var(--accent-primary)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: goal.isCompleted ? 'var(--success)' : '#fff' }}>{goal.title}</h3>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{goal.current} / {goal.target}</span>
+                  </div>
+                  {goal.deadline && (
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                      Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR')}
+                    </p>
+                  )}
+                  <div className="progress-bar" style={{ height: '12px', background: 'rgba(0,0,0,0.3)' }}>
+                    <div className="progress-fill" style={{ width: `${progressPct}%`, background: goal.isCompleted ? 'var(--success)' : 'var(--accent-gradient)' }}></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
         <Trophy size={24} color="gold" /> Linha do Tempo (Timeline)

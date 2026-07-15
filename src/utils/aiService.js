@@ -1,4 +1,4 @@
-export const processAIInput = async (text, currentProjects, chatHistory = [], tasks = []) => {
+export const processAIInput = async (text, currentProjects, chatHistory = [], tasks = [], goals = []) => {
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   if (!apiKey) {
     console.error("DeepSeek API Key não configurada!");
@@ -16,10 +16,16 @@ export const processAIInput = async (text, currentProjects, chatHistory = [], ta
     const projTasks = tasks.filter(t => t.projectId === p.id);
     const completed = projTasks.filter(t => t.completed).length;
     const total = projTasks.length;
+    const projGoals = goals.filter(g => g.projectId === p.id);
+    const goalsText = projGoals.length > 0 
+      ? projGoals.map(g => `    - ${g.title}: ${g.current}/${g.target} (Prazo: ${g.deadline || 'Nenhum'})`).join('\n')
+      : 'Nenhuma meta numérica específica.';
     return `- [${p.status === 'archived' ? 'ARQUIVADO' : 'ATIVO'}] ${p.name}
-  Meta: ${p.description || 'Nenhum'}
+  Meta Geral: ${p.description || 'Nenhum'}
+  Metas Numéricas Específicas:
+${goalsText}
   Milestones: ${p.milestones || 'Nenhum'}
-  Progresso: ${p.progress}% (${completed}/${total} tarefas)
+  Progresso de Tarefas: ${p.progress}% (${completed}/${total} tarefas)
   ID do Projeto (USE ESTE ID NAS AÇÕES): ${p.id}`;
   }).join('\n\n');
 
@@ -60,8 +66,14 @@ Ações JSON possíveis:
    Campos: "type": "UPDATE_PROGRESS", "projectId", "progress" (numero de 0 a 100)
 8. "ERASE_ALL": O usuário pediu EXPLICITAMENTE para apagar/resetar todos os dados, projetos e tarefas (ex: "Delete tudo", "Resete os projetos").
    Campos: "type": "ERASE_ALL"
-9. "CLEAR_SUGGESTIONS": O usuário pediu para limpar/apagar as sugestões de tarefas pendentes na tela.
+9. "CLEAR_SUGGESTIONS": O usuário pediu para limpar as sugestões de tarefas do chat.
    Campos: "type": "CLEAR_SUGGESTIONS"
+10. "CLEAR_PENDING_TASKS": O usuário pediu para apagar todas as tarefas pendentes ("Próximos Passos") da Home.
+    Campos: "type": "CLEAR_PENDING_TASKS"
+11. "CREATE_GOAL": O usuário quer criar uma meta numérica específica para um projeto.
+    Campos: "type": "CREATE_GOAL", "projectId", "title", "target" (numero inteiro), "deadline" (data YYYY-MM-DD opcional)
+12. "UPDATE_GOAL": O usuário quer atualizar o progresso de uma meta numérica (ex: "Fiz 10 aulas da meta X").
+    Campos: "type": "UPDATE_GOAL", "goalId" (procure o ID da meta no histórico ou peça para ele), "current" (novo número inteiro de progresso)
 
 **Exemplo de Resposta:**
 Projeto "Reforma" criado com sucesso! Já anotei os marcos que você pediu.

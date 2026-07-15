@@ -10,11 +10,19 @@ import { Pomodoro } from '../components/Pomodoro';
 import { NewProjectModal } from '../components/NewProjectModal';
 
 export const Home = () => {
-  const { projects, tasks, toggleTaskComplete, quotes } = useTaskContext();
+  const { projects, tasks, toggleTaskComplete, quotes, clearPendingTasks, addTask } = useTaskContext();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [dailyQuote, setDailyQuote] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
   const navigate = useNavigate();
+
+  const handleAddManualTask = (e) => {
+    if (e.key === 'Enter' && newTaskTitle.trim()) {
+      addTask(null, newTaskTitle.trim());
+      setNewTaskTitle('');
+    }
+  };
 
   useEffect(() => {
     if (quotes.length > 0) {
@@ -105,8 +113,11 @@ export const Home = () => {
             </div>
 
             <section className="tasks-section" style={{ paddingBottom: '5rem' }}>
-              <h2>Próximos Passos (Sugestões Aprovadas)</h2>
-              <div className="task-list" style={{ marginTop: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 style={{ margin: 0 }}>Próximos Passos</h2>
+                <button onClick={clearPendingTasks} className="btn-small" style={{ background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>Limpar</button>
+              </div>
+              <div className="task-list">
                 {tasks.filter(t => !t.completed).length === 0 ? (
                   <p style={{ color: 'var(--text-secondary)', padding: '1rem', background: 'var(--glass-bg)', borderRadius: '12px' }}>
                     Nenhuma pendência! Peça ideias para a IA no chat flutuante.
@@ -132,6 +143,17 @@ export const Home = () => {
                     );
                   })
                 )}
+              </div>
+              <div style={{ marginTop: '1rem' }}>
+                <input 
+                  type="text" 
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  onKeyDown={handleAddManualTask}
+                  placeholder="Adicionar tarefa avulsa + Enter..." 
+                  className="time-input"
+                  style={{ width: '100%', padding: '0.8rem 1rem' }}
+                />
               </div>
             </section>
 

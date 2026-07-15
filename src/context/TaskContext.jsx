@@ -16,6 +16,7 @@ export const TaskProvider = ({ children }) => {
   const [victories, setVictories] = useState([]);
   const [productivityRatings, setProductivityRatings] = useState([]);
   const [quotes, setQuotes] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const skipSyncRef = useRef(true);
 
@@ -33,6 +34,7 @@ export const TaskProvider = ({ children }) => {
           setVictories(payload.victories || []);
           setProductivityRatings(payload.productivityRatings || []);
           setQuotes(payload.quotes || [{ id: '1', text: 'Só ação gera poder.' }]);
+          setGoals(payload.goals || []);
         }
       } catch (err) {
         console.error("Erro ao puxar dados da nuvem:", err);
@@ -47,7 +49,7 @@ export const TaskProvider = ({ children }) => {
   useEffect(() => {
     if (skipSyncRef.current || !isLoaded) return;
     const syncToCloud = async () => {
-      const payload = { projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes };
+      const payload = { projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, goals };
       try {
         await supabase.from('todo10x').upsert({ id: 1, data_payload: payload });
       } catch (err) {
@@ -57,7 +59,7 @@ export const TaskProvider = ({ children }) => {
     
     const debounceTimer = setTimeout(syncToCloud, 1000);
     return () => clearTimeout(debounceTimer);
-  }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, isLoaded]);
+  }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, goals, isLoaded]);
 
   const triggerConfetti = () => {
     confetti({
@@ -68,7 +70,7 @@ export const TaskProvider = ({ children }) => {
     });
   };
 
-  const addProject = (name, description, dailyGoal = 60, milestones = '') => {
+  const addProject = (name, description, milestones = '') => {
     const newProject = {
       id: Date.now().toString(),
       name,
@@ -76,7 +78,7 @@ export const TaskProvider = ({ children }) => {
       milestones,
       status: 'active',
       progress: 0,
-      dailyGoal
+      timeTiers: { ok: 10, good: 30, excellent: 60 }
     };
     setProjects(prev => [...prev, newProject]);
     return newProject;
@@ -151,10 +153,11 @@ export const TaskProvider = ({ children }) => {
     if (!pastDateStr) {
        const proj = projects.find(p => p.id === projectId);
        if (proj) {
-          setTimeLogs(currentLogs => {
+           setTimeLogs(currentLogs => {
              const workedToday = currentLogs.filter(l => l.date === logDate && l.projectId === projectId)
                                             .reduce((acc, l) => acc + l.durationInMinutes, 0);
-             if (workedToday + durationInMinutes >= proj.dailyGoal) {
+             const target = proj.timeTiers?.excellent || proj.dailyGoal || 60;
+             if (workedToday + durationInMinutes >= target) {
                 triggerConfetti();
              }
              return currentLogs;
@@ -187,6 +190,33 @@ export const TaskProvider = ({ children }) => {
   };
 
   const clearSuggestions = () => setSuggestions([]);
+  const clearPendingTasks = () => setTasks(prev => prev.filter(t => t.completed));
+
+  const addGoal = (projectId, title, target, deadline) => {
+    const newGoal = {
+      id: Date.now().toString(),
+      projectId,
+      title,
+      target: parseInt(target) || 1,
+      current: 0,
+      deadline: deadline || '',
+      isCompleted: false
+    };
+    setGoals(prev => [...prev, newGoal]);
+  };
+
+  const updateGoalProgress = (goalId, current) => {
+    setGoals(prev => prev.map(g => {
+      if (g.id === goalId) {
+        const isCompleted = current >= g.target;
+        if (isCompleted && !g.isCompleted) triggerConfetti();
+        return { ...g, current, isCompleted };
+      }
+      return g;
+    }));
+  };
+
+  const deleteGoal = (goalId) => setGoals(prev => prev.filter(g => g.id !== goalId));
 
   const addQuote = (text) => setQuotes(prev => [...prev, { id: Date.now().toString(), text }]);
   const removeQuote = (id) => setQuotes(prev => prev.filter(q => q.id !== id));
@@ -195,7 +225,7 @@ export const TaskProvider = ({ children }) => {
     const userMsg = { id: Date.now().toString(), role: 'user', text };
     setChatMessages(prev => [...prev, userMsg]);
 
-    const result = await processAIInput(text, projects, chatMessages, tasks);
+    const result = await processAIInput(text, projects, chatMessages, tasks, goals);
     
     if (result.text) {
       const aiMsg = { id: Date.now().toString() + 'ai', role: 'assistant', text: result.text };
@@ -247,7 +277,7 @@ export const TaskProvider = ({ children }) => {
             milestones: action.milestones || '',
             status: 'active',
             progress: 0,
-            dailyGoal: 60
+            timeTiers: { ok: 10, good: 30, excellent: 60 }
           };
           newProjects.push(newProj);
         }
@@ -271,6 +301,15 @@ export const TaskProvider = ({ children }) => {
         else if (action.type === 'CLEAR_SUGGESTIONS') {
           setSuggestions([]);
         }
+        else if (action.type === 'CREATE_GOAL' && projectId) {
+          addGoal(projectId, action.title, action.target, action.deadline);
+        }
+        else if (action.type === 'UPDATE_GOAL') {
+          updateGoalProgress(action.goalId, action.current);
+        }
+        else if (action.type === 'CLEAR_PENDING_TASKS') {
+          clearPendingTasks();
+        }
       });
 
       if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS', 'ERASE_ALL'].includes(a.type))) {
@@ -287,6 +326,8 @@ export const TaskProvider = ({ children }) => {
       timeLogs, logTime,
       chatMessages, handleAIInput,
       suggestions, acceptSuggestion, rejectSuggestion, clearSuggestions,
+      goals, addGoal, updateGoalProgress, deleteGoal,
+      clearPendingTasks,
       productivityRatings, addProductivityRating,
       quotes, addQuote, removeQuote,
       isLoaded, triggerConfetti
