@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, CheckCircle } from 'lucide-react';
 import { useTaskContext } from '../context/TaskContext';
+import { triggerReward } from '../utils/rewards';
 
 export const Pomodoro = () => {
   const { projects, logTime, handleAIInput } = useTaskContext();
@@ -51,10 +52,8 @@ export const Pomodoro = () => {
         const diff = Math.round((endTime - now) / 1000);
         
         if (diff <= 0) {
-          // Finished
           logTime(selectedProjectId, customMinutes);
-          playBeep(800, 'square');
-          setTimeout(() => playBeep(800, 'square'), 200);
+          triggerReward();
           
           setStatus('victory');
           setEndTime(null);

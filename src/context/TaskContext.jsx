@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { processAIInput } from '../utils/aiService';
 import { supabase } from '../lib/supabase';
-import confetti from 'canvas-confetti';
+import { triggerReward } from '../utils/rewards';
 
 const TaskContext = createContext();
 
@@ -14,10 +14,10 @@ export const TaskProvider = ({ children }) => {
   const [chatMessages, setChatMessages] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [victories, setVictories] = useState([]);
-  const [productivityRatings, setProductivityRatings] = useState([]);
   const [quotes, setQuotes] = useState([]);
   const [goals, setGoals] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const skipSyncRef = useRef(true);
 
   useEffect(() => {
@@ -61,14 +61,6 @@ export const TaskProvider = ({ children }) => {
     return () => clearTimeout(debounceTimer);
   }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, goals, isLoaded]);
 
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#00e676', '#00bcd4', '#ffeb3b', '#ff4081']
-    });
-  };
 
   const addProject = (name, description, milestones = '') => {
     const newProject = {
@@ -128,7 +120,7 @@ export const TaskProvider = ({ children }) => {
       setTasks(currentTasks => {
         const task = currentTasks.find(t => t.id === taskId);
         if (task && task.completed) {
-          triggerConfetti();
+          triggerReward();
           setProjects(currentProjects => {
             return currentProjects.map(p => {
               if (p.id === task.projectId) {
@@ -149,7 +141,7 @@ export const TaskProvider = ({ children }) => {
                     const completedForGoal = currentTasks.filter(t => t.goalId === g.id && t.completed).length;
                     const isCompleted = completedForGoal >= g.target;
                     if (isCompleted && !g.isCompleted) {
-                      setTimeout(() => triggerConfetti(), 300);
+                      setTimeout(() => triggerReward(), 300);
                       addVictory(g.projectId, `Meta Concluída: ${g.title}`);
                     }
                     return { ...g, current: completedForGoal, isCompleted };
@@ -184,7 +176,7 @@ export const TaskProvider = ({ children }) => {
                                             .reduce((acc, l) => acc + l.durationInMinutes, 0);
              const target = proj.timeTiers?.excellent || proj.dailyGoal || 60;
              if (workedToday + durationInMinutes >= target) {
-                triggerConfetti();
+                triggerReward();
              }
              return currentLogs;
           });
@@ -358,6 +350,11 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
+  const breakDownTask = async (taskTitle) => {
+    setIsChatOpen(true);
+    await handleAIInput(`Estou travado na tarefa "${taskTitle}". Por favor, quebre ela em 3 sub-tarefas atômicas e ridículas de fáceis e use SUGGEST_TASK.`);
+  };
+
   return (
     <TaskContext.Provider value={{
       projects, addProject, updateProject,
@@ -370,7 +367,8 @@ export const TaskProvider = ({ children }) => {
       clearPendingTasks,
       productivityRatings, addProductivityRating,
       quotes, addQuote, removeQuote,
-      isLoaded, triggerConfetti
+      isLoaded, triggerConfetti,
+      isChatOpen, setIsChatOpen, breakDownTask
     }}>
       {children}
     </TaskContext.Provider>

@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X as CloseIcon } from 'lucide-react';
 import { ChatInterface } from './ChatInterface';
+import { useTaskContext } from '../context/TaskContext';
 
 export const ChatPanel = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isChatOpen, setIsChatOpen } = useTaskContext();
 
-  if (!isOpen) {
+  if (!isChatOpen) {
     return (
       <button 
         className="btn-icon"
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsChatOpen(true)}
         style={{
           position: 'fixed', bottom: '2rem', right: '2rem',
           background: 'var(--accent-gradient)', color: '#000',
@@ -39,7 +40,7 @@ export const ChatPanel = () => {
           <h3 className="text-gradient">IA Assistente</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Relate suas vitórias ou peça ajuda</p>
         </div>
-        <button className="btn-icon" onClick={() => setIsOpen(false)}><CloseIcon size={20} /></button>
+        <button className="btn-icon" onClick={() => setIsChatOpen(false)}><CloseIcon size={20} /></button>
       </div>
       
       <ChatInterface />

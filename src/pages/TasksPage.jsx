@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
-import { Circle, Plus, Sparkles, CheckCircle, X, Edit2, Trash2, Save } from 'lucide-react';
+import { Circle, Plus, Sparkles, CheckCircle, X, Edit2, Trash2, Save, Wand2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const TasksPage = () => {
-  const { projects, tasks, goals, suggestions, toggleTaskComplete, addTask, acceptSuggestion, rejectSuggestion, clearSuggestions, addGoal, deleteTask, editTask } = useTaskContext();
+  const { projects, tasks, goals, suggestions, toggleTaskComplete, addTask, acceptSuggestion, rejectSuggestion, clearSuggestions, addGoal, deleteTask, editTask, breakDownTask } = useTaskContext();
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskProjectId, setNewTaskProjectId] = useState('');
   const [isCreatingGoal, setIsCreatingGoal] = useState(false);
@@ -165,6 +165,9 @@ export const TasksPage = () => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="btn-icon" onClick={() => breakDownTask(task.title)} title="Quebrar em passos menores" style={{ color: '#fbbf24' }}>
+                      <Wand2 size={18} />
+                    </button>
                     {editingTaskId === task.id ? (
                       <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
                         <Save size={18} />
@@ -303,6 +306,9 @@ export const TasksPage = () => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button className="btn-icon" onClick={() => breakDownTask(task.title)} title="Quebrar em passos menores" style={{ color: '#fbbf24' }}>
+                        <Wand2 size={18} />
+                      </button>
                       {editingTaskId === task.id ? (
                         <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
                           <Save size={18} />
