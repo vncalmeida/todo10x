@@ -1,20 +1,16 @@
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config();
+import puppeteer from 'puppeteer';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.VITE_SUPABASE_ANON_KEY
-);
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-async function test() {
-  console.log('Testando fetch...');
-  const { data: fetch, error: fetchErr } = await supabase.from('todo10x').select('*');
-  console.log('Fetch Result:', fetch, fetchErr);
+  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+  page.on('pageerror', error => console.log('PAGE ERROR:', error.message));
+  page.on('requestfailed', request =>
+    console.log('REQUEST FAILED:', request.url(), request.failure().errorText)
+  );
 
-  console.log('Testando upsert...');
-  const { data: up, error: upErr } = await supabase.from('todo10x').upsert({ id: 1, data_payload: { test: true } });
-  console.log('Upsert Result:', up, upErr);
-}
-
-test();
+  await page.goto('http://localhost:5173', { waitUntil: 'networkidle2' });
+  
+  await browser.close();
+})();

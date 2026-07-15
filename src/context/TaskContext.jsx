@@ -16,6 +16,7 @@ export const TaskProvider = ({ children }) => {
   const [victories, setVictories] = useState([]);
   const [quotes, setQuotes] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [productivityRatings, setProductivityRatings] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const skipSyncRef = useRef(true);
@@ -191,7 +192,7 @@ export const TaskProvider = ({ children }) => {
       return [...filtered, { date, score }];
     });
     if (score >= 4) {
-      triggerConfetti();
+      triggerReward();
     }
   };
 
@@ -240,7 +241,7 @@ export const TaskProvider = ({ children }) => {
     setGoals(prev => prev.map(g => {
       if (g.id === goalId) {
         const isCompleted = current >= g.target;
-        if (isCompleted && !g.isCompleted) triggerConfetti();
+        if (isCompleted && !g.isCompleted) triggerReward();
         return { ...g, current, isCompleted };
       }
       return g;
