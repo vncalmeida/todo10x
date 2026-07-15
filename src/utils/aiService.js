@@ -82,8 +82,8 @@ Ações JSON possíveis e seus campos:
    Campos: "type": "ARCHIVE_PROJECT", "projectId"
 9. "CREATE_GOAL": Cria meta. Campos: "type": "CREATE_GOAL", "projectId", "title", "target" (numero inteiro), "tasks" (array opcional de strings com titulos)
 10. "UPDATE_GOAL": Progresso. Campos: "type": "UPDATE_GOAL", "goalId", "current"
-11. "LOG_VICTORY": Registra vitória. Campos: "type": "LOG_VICTORY", "title", "projectId"
-12. "LOG_PAST_TIME": Registra tempo retroativo. Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes", "date"
+11. "LOG_VICTORY": Registra vitória. Campos: "type": "LOG_VICTORY", "title", "projectId", "date" (Use a data exata em YYYY-MM-DD. Atenção: se for hoje, use a data atual do sistema mostrada acima!)
+12. "LOG_PAST_TIME": Registra tempo de trabalho (seja hoje ou ontem). Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes", "date" (Use a data exata em YYYY-MM-DD. Atenção: se for hoje, use a data atual do sistema!)
     (MUITO IMPORTANTE: Se o usuário disser que trabalhou num projeto e detalhar o que fez, você DEVE retornar TAMBÉM uma ação "LOG_VICTORY" com a descrição, para que isso apareça no diário dele!)
 
 **Exemplo de Resposta:**

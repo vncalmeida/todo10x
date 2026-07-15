@@ -24,7 +24,7 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.5;
-  min-height: 100vh;
+  min-height: 100dvh;
   /* Fundo sutil radial para dar profundidade premium */
   background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08) 0%, rgba(0,0,0,0) 50%);
   background-attachment: fixed;
@@ -33,7 +33,7 @@ body {
 /* App Layout Sidebar */
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .sidebar {
@@ -73,6 +73,8 @@ body {
 }
 
 .main-wrapper {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   margin-left: 260px; /* offset sidebar */
   padding: 1.5rem;
