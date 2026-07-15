@@ -4,12 +4,12 @@ import { Circle, Plus, Sparkles, CheckCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const TasksPage = () => {
-  const { 
-    projects, tasks, goals, suggestions, 
-    toggleTaskComplete, addTask, 
-    acceptSuggestion, rejectSuggestion, clearSuggestions 
-  } = useTaskContext();
+  const { projects, tasks, goals, suggestions, toggleTaskComplete, addTask, acceptSuggestion, rejectSuggestion, clearSuggestions, addGoal } = useTaskContext();
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [isCreatingGoal, setIsCreatingGoal] = useState(false);
+  const [newGoalTitle, setNewGoalTitle] = useState('');
+  const [newGoalProjectId, setNewGoalProjectId] = useState('');
+  const [newGoalTasksText, setNewGoalTasksText] = useState('');
   const navigate = useNavigate();
   
   const pendingTasks = tasks.filter(t => !t.completed);
@@ -28,6 +28,18 @@ export const TasksPage = () => {
       addTask(null, newTaskTitle.trim(), new Date().toISOString().split('T')[0]);
       setNewTaskTitle('');
     }
+  };
+
+  const handleCreateTaskGoal = () => {
+    if (!newGoalTitle.trim() || !newGoalTasksText.trim()) return;
+    const tasksArray = newGoalTasksText.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    if (tasksArray.length === 0) return;
+    
+    addGoal(newGoalProjectId || null, newGoalTitle.trim(), 0, '', tasksArray);
+    setIsCreatingGoal(false);
+    setNewGoalTitle('');
+    setNewGoalProjectId('');
+    setNewGoalTasksText('');
   };
 
   return (
@@ -128,6 +140,48 @@ export const TasksPage = () => {
 
       {/* Grouped by Goals */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '1.3rem' }}>Minhas Metas</h2>
+          <button className="btn-small" onClick={() => setIsCreatingGoal(!isCreatingGoal)} style={{ background: 'var(--text-primary)', color: '#000' }}>
+            <Plus size={16} /> Nova Meta de Tarefas
+          </button>
+        </div>
+
+        {isCreatingGoal && (
+          <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid var(--text-secondary)' }}>
+            <h3 style={{ margin: 0 }}>Criar Nova Meta</h3>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <input 
+                type="text" 
+                placeholder="Nome da Meta (ex: Lançamento do Site)" 
+                value={newGoalTitle} 
+                onChange={(e) => setNewGoalTitle(e.target.value)} 
+                className="time-input" 
+                style={{ flex: 2, padding: '0.8rem', background: 'transparent', border: '1px solid var(--glass-border)', textAlign: 'left', fontSize: '1rem' }} 
+              />
+              <select 
+                className="project-select" 
+                value={newGoalProjectId} 
+                onChange={(e) => setNewGoalProjectId(e.target.value)}
+                style={{ flex: 1 }}
+              >
+                <option value="" style={{color: '#000'}}>Geral (Sem Projeto)</option>
+                {projects.map(p => <option key={p.id} value={p.id} style={{color: '#000'}}>{p.name}</option>)}
+              </select>
+            </div>
+            <textarea 
+              placeholder="Digite as tarefas dessa meta (uma por linha)&#10;Ex:&#10;Fazer design&#10;Aprovar textos&#10;Publicar site"
+              value={newGoalTasksText}
+              onChange={(e) => setNewGoalTasksText(e.target.value)}
+              style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--glass-border)', color: '#fff', minHeight: '120px', resize: 'vertical' }}
+            />
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button className="btn-small" onClick={() => setIsCreatingGoal(false)}>Cancelar</button>
+              <button className="btn-small" onClick={handleCreateTaskGoal} style={{ background: '#fff', color: '#000' }}>Criar Meta</button>
+            </div>
+          </div>
+        )}
+
         {Object.entries(tasksByGoal).map(([goalId, goalTasks]) => {
           const goal = goals.find(g => g.id === goalId);
           if (!goal) return null;
