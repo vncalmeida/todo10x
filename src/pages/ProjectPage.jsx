@@ -1,19 +1,21 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
-import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { StreakCalendar } from '../components/StreakCalendar';
 
 export const ProjectPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, updateGoalProgress, toggleTaskComplete } = useTaskContext();
+  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, toggleTaskComplete, deleteTask, editTask } = useTaskContext();
   const [isEditingTiers, setIsEditingTiers] = useState(false);
   const [tiers, setTiers] = useState({ ok: 10, good: 30, excellent: 60 });
   
   const [isCreatingGoal, setIsCreatingGoal] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');
-  const [newGoalTarget, setNewGoalTarget] = useState('');
+  const [newGoalTasksText, setNewGoalTasksText] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingTaskTitle, setEditingTaskTitle] = useState('');
   
   const project = projects.find(p => p.id === id);
   
@@ -29,12 +31,27 @@ export const ProjectPage = () => {
   };
 
   const handleCreateGoal = () => {
-    if (newGoalTitle.trim() && newGoalTarget) {
-      addGoal(id, newGoalTitle.trim(), newGoalTarget, '');
-      setNewGoalTitle('');
-      setNewGoalTarget('');
-      setIsCreatingGoal(false);
+    if (!newGoalTitle.trim() || !newGoalTasksText.trim()) return;
+    const tasksArray = newGoalTasksText.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    if (tasksArray.length === 0) return;
+    
+    addGoal(id, newGoalTitle.trim(), 0, '', tasksArray);
+    setIsCreatingGoal(false);
+    setNewGoalTitle('');
+    setNewGoalTasksText('');
+  };
+
+  const handleStartEdit = (task) => {
+    setEditingTaskId(task.id);
+    setEditingTaskTitle(task.title);
+  };
+
+  const handleSaveEdit = (taskId) => {
+    if (editingTaskTitle.trim()) {
+      editTask(taskId, editingTaskTitle.trim());
     }
+    setEditingTaskId(null);
+    setEditingTaskTitle('');
   };
 
   const currentTiers = project.timeTiers || { ok: 10, good: 30, excellent: 60 };
@@ -120,73 +137,101 @@ export const ProjectPage = () => {
         </div>
       </div>
 
-      {projectGoals.length > 0 && (
+      {projectGoals.filter(g => !g.isCompleted).length > 0 && (
         <div style={{ marginBottom: '4rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
-              <Flag size={24} color="var(--accent-primary)" /> Metas Numéricas
+              <Flag size={24} color="var(--text-secondary)" /> Metas Ativas
             </h2>
             {!isCreatingGoal && (
-               <button className="btn-small" onClick={() => setIsCreatingGoal(true)} style={{ background: 'transparent', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)' }}>
+               <button className="btn-small" onClick={() => setIsCreatingGoal(true)} style={{ background: 'var(--text-primary)', color: '#000' }}>
                  <Plus size={16} /> Nova Meta
                </button>
             )}
           </div>
           
           {isCreatingGoal && (
-             <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-               <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Criar Meta Manualmente</h3>
-               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                 <input type="text" placeholder="Título (ex: 22 Aulas)" value={newGoalTitle} onChange={e => setNewGoalTitle(e.target.value)} className="time-input" style={{ flex: 2 }} />
-                 <input type="number" placeholder="Alvo (ex: 22)" value={newGoalTarget} onChange={e => setNewGoalTarget(e.target.value)} className="time-input" style={{ flex: 1 }} />
-                 <button className="btn-small" onClick={handleCreateGoal} style={{ background: 'var(--accent-gradient)', height: '42px' }}>Criar</button>
-                 <button className="btn-small" onClick={() => setIsCreatingGoal(false)} style={{ background: 'transparent', border: '1px solid var(--glass-border)', height: '42px' }}>Cancelar</button>
+             <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid var(--text-secondary)', marginBottom: '1.5rem' }}>
+               <h3 style={{ margin: 0 }}>Criar Nova Meta</h3>
+               <input 
+                 type="text" 
+                 placeholder="Nome da Meta (ex: Lançamento do Site)" 
+                 value={newGoalTitle} 
+                 onChange={(e) => setNewGoalTitle(e.target.value)} 
+                 className="time-input" 
+                 style={{ padding: '0.8rem', background: 'transparent', border: '1px solid var(--glass-border)', textAlign: 'left', fontSize: '1rem' }} 
+               />
+               <textarea 
+                 placeholder="Digite as tarefas dessa meta (uma por linha)&#10;Ex:&#10;Fazer design&#10;Aprovar textos&#10;Publicar site"
+                 value={newGoalTasksText}
+                 onChange={(e) => setNewGoalTasksText(e.target.value)}
+                 style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--glass-border)', color: '#fff', minHeight: '120px', resize: 'vertical' }}
+               />
+               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                 <button className="btn-small" onClick={() => setIsCreatingGoal(false)}>Cancelar</button>
+                 <button className="btn-small" onClick={handleCreateGoal} style={{ background: '#fff', color: '#000' }}>Criar Meta</button>
                </div>
              </div>
           )}
 
-          <div style={{ display: 'grid', gap: '1.5rem' }}>
-            {projectGoals.map(goal => {
-              const progressPct = Math.min(100, Math.round((goal.current / goal.target) * 100)) || 0;
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+            {projectGoals.filter(g => !g.isCompleted).map(goal => {
               const goalTasks = tasks.filter(t => t.goalId === goal.id);
 
               return (
-                <div key={goal.id} className="glass-panel" style={{ padding: '1.5rem', borderLeft: goal.isCompleted ? '4px solid var(--success)' : '4px solid var(--accent-primary)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: goal.isCompleted ? 'var(--success)' : '#fff' }}>{goal.title}</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <button onClick={() => updateGoalProgress(goal.id, Math.max(0, goal.current - 1))} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}><Minus size={14} /></button>
-                      <span style={{ fontSize: '1.2rem', fontWeight: 'bold', width: '50px', textAlign: 'center' }}>{goal.current} / {goal.target}</span>
-                      <button onClick={() => updateGoalProgress(goal.id, goal.current + 1)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}><Plus size={14} /></button>
+                <div key={goal.id}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ background: '#D4AF37', color: '#000', padding: '0.8rem 1.5rem', fontWeight: '900', fontSize: '1.5rem', letterSpacing: '2px', lineHeight: '1' }}>
+                      META
+                    </div>
+                    <div style={{ background: 'transparent', color: '#fff', padding: '0.8rem 1.5rem', fontWeight: '800', fontSize: '1.2rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                      {goal.title}
                     </div>
                   </div>
-                  {goal.deadline && (
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                      Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR')}
-                    </p>
-                  )}
-                  <div className="progress-bar" style={{ height: '12px', background: 'rgba(0,0,0,0.3)', marginBottom: goalTasks.length > 0 ? '1.5rem' : '0' }}>
-                    <div className="progress-fill" style={{ width: `${progressPct}%`, background: goal.isCompleted ? 'var(--success)' : 'var(--accent-gradient)' }}></div>
-                  </div>
-
-                  {goalTasks.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {goalTasks.map(task => (
-                        <div key={task.id} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', padding: '0.8rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-                          <button 
-                            className="btn-icon" 
-                            style={{ width: '24px', height: '24px', background: task.completed ? 'var(--success)' : 'transparent', border: task.completed ? 'none' : '1px solid var(--text-secondary)' }}
-                            onClick={() => toggleTaskComplete(task.id)}
-                          >
-                            {task.completed && <CheckCircle size={14} color="#000" />}
-                          </button>
-                          <span style={{ fontSize: '0.95rem', color: task.completed ? 'var(--text-secondary)' : '#fff', textDecoration: task.completed ? 'line-through' : 'none' }}>
-                            {task.title}
-                          </span>
+                  
+                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)', borderTop: 'none', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {goalTasks.map(task => (
+                      <div key={task.id} className="glass-panel" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#0a0a0a', border: '1px solid #333' }}>
+                        <button 
+                          className="btn-icon" 
+                          style={{ width: '28px', height: '28px', background: task.completed ? 'var(--success)' : 'transparent', border: task.completed ? 'none' : '2px solid var(--text-secondary)' }}
+                          onClick={() => toggleTaskComplete(task.id)}
+                        >
+                          {task.completed && <CheckCircle size={18} color="#000" />}
+                        </button>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
+                          {editingTaskId === task.id ? (
+                            <input 
+                              type="text" 
+                              value={editingTaskTitle} 
+                              onChange={(e) => setEditingTaskTitle(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
+                              autoFocus
+                              style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', width: '100%' }}
+                            />
+                          ) : (
+                            <span style={{ fontSize: '1rem', color: '#fff', textDecoration: task.completed ? 'line-through' : 'none', opacity: task.completed ? 0.5 : 1 }}>{task.title}</span>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          {editingTaskId === task.id ? (
+                            <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
+                              <Save size={18} />
+                            </button>
+                          ) : (
+                            <button className="btn-icon" onClick={() => handleStartEdit(task)}>
+                              <Edit2 size={18} />
+                            </button>
+                          )}
+                          <button className="btn-icon" onClick={() => deleteTask(task.id)} style={{ color: 'var(--danger)' }}>
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })}
@@ -195,23 +240,36 @@ export const ProjectPage = () => {
       )}
 
       {projectGoals.length === 0 && (
-        <div style={{ marginBottom: '4rem', textAlign: 'center', padding: '2rem', background: 'var(--glass-bg)', borderRadius: '12px', border: '1px dashed var(--glass-border)' }}>
+        <div style={{ marginBottom: '4rem', textAlign: 'center', padding: '2rem', background: 'var(--glass-bg)', borderRadius: '0', border: '1px dashed var(--glass-border)' }}>
           <Flag size={32} color="var(--text-secondary)" style={{ marginBottom: '1rem' }} />
-          <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Nenhuma Meta Específica</h3>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Crie metas numéricas para acompanhar o seu progresso.</p>
+          <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Nenhuma Meta Ativa</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Crie metas baseadas em tarefas para acompanhar o seu progresso.</p>
           
           {isCreatingGoal ? (
-             <div style={{ maxWidth: '500px', margin: '0 auto', textAlign: 'left' }}>
-               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                 <input type="text" placeholder="Título (ex: 22 Aulas)" value={newGoalTitle} onChange={e => setNewGoalTitle(e.target.value)} className="time-input" style={{ flex: 2 }} />
-                 <input type="number" placeholder="Alvo (ex: 22)" value={newGoalTarget} onChange={e => setNewGoalTarget(e.target.value)} className="time-input" style={{ flex: 1 }} />
-                 <button className="btn-small" onClick={handleCreateGoal} style={{ background: 'var(--accent-gradient)', height: '42px' }}>Criar</button>
-                 <button className="btn-small" onClick={() => setIsCreatingGoal(false)} style={{ background: 'transparent', border: '1px solid var(--glass-border)', height: '42px' }}>Cancelar</button>
+             <div className="glass-panel" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid var(--text-secondary)' }}>
+               <h3 style={{ margin: 0 }}>Criar Nova Meta</h3>
+               <input 
+                 type="text" 
+                 placeholder="Nome da Meta (ex: Lançamento do Site)" 
+                 value={newGoalTitle} 
+                 onChange={(e) => setNewGoalTitle(e.target.value)} 
+                 className="time-input" 
+                 style={{ padding: '0.8rem', background: 'transparent', border: '1px solid var(--glass-border)', textAlign: 'left', fontSize: '1rem' }} 
+               />
+               <textarea 
+                 placeholder="Digite as tarefas dessa meta (uma por linha)&#10;Ex:&#10;Fazer design&#10;Aprovar textos&#10;Publicar site"
+                 value={newGoalTasksText}
+                 onChange={(e) => setNewGoalTasksText(e.target.value)}
+                 style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--glass-border)', color: '#fff', minHeight: '120px', resize: 'vertical' }}
+               />
+               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                 <button className="btn-small" onClick={() => setIsCreatingGoal(false)}>Cancelar</button>
+                 <button className="btn-small" onClick={handleCreateGoal} style={{ background: '#fff', color: '#000' }}>Criar Meta</button>
                </div>
              </div>
           ) : (
-            <button className="btn-small" onClick={() => setIsCreatingGoal(true)} style={{ background: 'transparent', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', margin: '0 auto' }}>
-              <Plus size={16} /> Nova Meta Numérica
+            <button className="btn-small" onClick={() => setIsCreatingGoal(true)} style={{ background: 'var(--text-primary)', color: '#000', margin: '0 auto' }}>
+              <Plus size={16} /> Nova Meta
             </button>
           )}
         </div>

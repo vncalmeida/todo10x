@@ -111,6 +111,14 @@ export const TaskProvider = ({ children }) => {
     setVictories(prev => [...prev, newVic]);
   };
 
+  const deleteTask = (taskId) => {
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+  };
+
+  const editTask = (taskId, newTitle) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, title: newTitle } : t));
+  };
+
   const toggleTaskComplete = (taskId) => {
     setTasks(prev => prev.map(task => 
       task.id === taskId ? { ...task, completed: !task.completed } : task
@@ -140,7 +148,10 @@ export const TaskProvider = ({ children }) => {
                  if (g.id === task.goalId) {
                     const completedForGoal = currentTasks.filter(t => t.goalId === g.id && t.completed).length;
                     const isCompleted = completedForGoal >= g.target;
-                    if (isCompleted && !g.isCompleted) setTimeout(() => triggerConfetti(), 300);
+                    if (isCompleted && !g.isCompleted) {
+                      setTimeout(() => triggerConfetti(), 300);
+                      addVictory(g.projectId, `Meta Concluída: ${g.title}`);
+                    }
                     return { ...g, current: completedForGoal, isCompleted };
                  }
                  return g;
@@ -350,9 +361,9 @@ export const TaskProvider = ({ children }) => {
   return (
     <TaskContext.Provider value={{
       projects, addProject, updateProject,
-      tasks, addTask, toggleTaskComplete,
+      tasks, addTask, toggleTaskComplete, deleteTask, editTask,
       victories, addVictory,
-      timeLogs, logTime,
+      timeLogs, logTime, updateTimeLog, deleteTimeLog,
       chatMessages, handleAIInput,
       suggestions, acceptSuggestion, rejectSuggestion, clearSuggestions,
       goals, addGoal, updateGoalProgress, deleteGoal,

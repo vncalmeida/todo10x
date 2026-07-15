@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
-import { Circle, Plus, Sparkles, CheckCircle, X } from 'lucide-react';
+import { Circle, Plus, Sparkles, CheckCircle, X, Edit2, Trash2, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const TasksPage = () => {
-  const { projects, tasks, goals, suggestions, toggleTaskComplete, addTask, acceptSuggestion, rejectSuggestion, clearSuggestions, addGoal } = useTaskContext();
+  const { projects, tasks, goals, suggestions, toggleTaskComplete, addTask, acceptSuggestion, rejectSuggestion, clearSuggestions, addGoal, deleteTask, editTask } = useTaskContext();
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isCreatingGoal, setIsCreatingGoal] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');
   const [newGoalProjectId, setNewGoalProjectId] = useState('');
   const [newGoalTasksText, setNewGoalTasksText] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingTaskTitle, setEditingTaskTitle] = useState('');
   const navigate = useNavigate();
   
   const pendingTasks = tasks.filter(t => !t.completed);
@@ -40,6 +42,19 @@ export const TasksPage = () => {
     setNewGoalTitle('');
     setNewGoalProjectId('');
     setNewGoalTasksText('');
+  };
+
+  const handleStartEdit = (task) => {
+    setEditingTaskId(task.id);
+    setEditingTaskTitle(task.title);
+  };
+
+  const handleSaveEdit = (taskId) => {
+    if (editingTaskTitle.trim()) {
+      editTask(taskId, editingTaskTitle.trim());
+    }
+    setEditingTaskId(null);
+    setEditingTaskTitle('');
   };
 
   return (
@@ -111,7 +126,18 @@ export const TasksPage = () => {
                     <Circle size={22} color="var(--text-secondary)" />
                   </button>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
-                    <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
+                    {editingTaskId === task.id ? (
+                      <input 
+                        type="text" 
+                        value={editingTaskTitle} 
+                        onChange={(e) => setEditingTaskTitle(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
+                        autoFocus
+                        style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', width: '100%' }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
+                    )}
                     <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
                       {project ? (
                         <span style={{ border: '1px solid var(--glass-border)', padding: '0.1rem 0.5rem', color: '#fff' }}>{project.name}</span>
@@ -120,6 +146,20 @@ export const TasksPage = () => {
                       )}
                       <span style={{ border: '1px solid var(--glass-border)', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)' }}>{task.date}</span>
                     </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {editingTaskId === task.id ? (
+                      <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
+                        <Save size={18} />
+                      </button>
+                    ) : (
+                      <button className="btn-icon" onClick={() => handleStartEdit(task)}>
+                        <Edit2 size={18} />
+                      </button>
+                    )}
+                    <button className="btn-icon" onClick={() => deleteTask(task.id)} style={{ color: 'var(--danger)' }}>
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </div>
               );
@@ -208,11 +248,36 @@ export const TasksPage = () => {
                       <Circle size={22} color="var(--text-secondary)" />
                     </button>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
-                      <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
+                      {editingTaskId === task.id ? (
+                        <input 
+                          type="text" 
+                          value={editingTaskTitle} 
+                          onChange={(e) => setEditingTaskTitle(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
+                          autoFocus
+                          style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', width: '100%' }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
+                      )}
                       <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
                         <span style={{ border: '1px solid #333', padding: '0.1rem 0.5rem', color: '#fff' }}>{project ? project.name : 'Geral'}</span>
                         <span style={{ border: '1px solid #333', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)' }}>{task.date}</span>
                       </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      {editingTaskId === task.id ? (
+                        <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
+                          <Save size={18} />
+                        </button>
+                      ) : (
+                        <button className="btn-icon" onClick={() => handleStartEdit(task)}>
+                          <Edit2 size={18} />
+                        </button>
+                      )}
+                      <button className="btn-icon" onClick={() => deleteTask(task.id)} style={{ color: 'var(--danger)' }}>
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   </div>
                 ))}
