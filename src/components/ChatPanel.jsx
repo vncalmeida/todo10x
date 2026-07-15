@@ -9,7 +9,7 @@ export const ChatPanel = () => {
   if (!isChatOpen) {
     return (
       <button 
-        className="btn-icon"
+        className="btn-icon desktop-only"
         onClick={() => setIsChatOpen(true)}
         style={{
           position: 'fixed', bottom: '2rem', right: '2rem',
@@ -28,7 +28,7 @@ export const ChatPanel = () => {
   }
 
   return (
-    <div className="glass-panel chat-panel animate-fade-in" style={{ 
+    <div className="glass-panel chat-panel desktop-only animate-fade-in" style={{ 
       position: 'fixed', bottom: '2rem', right: '2rem',
       width: '90%', maxWidth: '380px', height: '600px', maxHeight: '80vh',
       display: 'flex', flexDirection: 'column', zIndex: 1000,

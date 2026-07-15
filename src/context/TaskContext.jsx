@@ -292,7 +292,7 @@ export const TaskProvider = ({ children }) => {
         }
         else if (action.type === 'COMPLETE_TASK') {
           setTasks(prev => prev.map(t => {
-            if (!t.completed && t.title.toLowerCase().includes(action.keyword.toLowerCase())) {
+            if (!t.completed && (t.id === action.taskId || (action.keyword && t.title.toLowerCase().includes(action.keyword.toLowerCase())))) {
               return { ...t, completed: true };
             }
             return t;
@@ -342,9 +342,22 @@ export const TaskProvider = ({ children }) => {
         else if (action.type === 'CLEAR_PENDING_TASKS') {
           clearPendingTasks();
         }
+        else if (action.type === 'CREATE_TASK') {
+          addTask(action.projectId || null, action.title);
+        }
+        else if (action.type === 'EDIT_TASK') {
+          editTask(action.taskId, action.updates);
+        }
+        else if (action.type === 'DELETE_TASK') {
+          deleteTask(action.taskId);
+        }
+        else if (action.type === 'UPDATE_PROJECT') {
+          const idx = newProjects.findIndex(p => p.id === action.projectId);
+          if (idx !== -1) newProjects[idx] = { ...newProjects[idx], ...action.updates };
+        }
       });
 
-      if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS', 'ERASE_ALL'].includes(a.type))) {
+      if (newProjects.length !== projects.length || result.actions.some(a => ['ARCHIVE_PROJECT', 'UPDATE_PROGRESS', 'UPDATE_PROJECT', 'ERASE_ALL'].includes(a.type))) {
         setProjects(newProjects);
       }
     }
