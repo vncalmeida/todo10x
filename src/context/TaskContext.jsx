@@ -367,7 +367,7 @@ export const TaskProvider = ({ children }) => {
       clearPendingTasks,
       productivityRatings, addProductivityRating,
       quotes, addQuote, removeQuote,
-      isLoaded, triggerConfetti,
+      isLoaded,
       isChatOpen, setIsChatOpen, breakDownTask
     }}>
       {children}
