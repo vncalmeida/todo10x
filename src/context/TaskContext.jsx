@@ -363,7 +363,7 @@ export const TaskProvider = ({ children }) => {
       projects, addProject, updateProject,
       tasks, addTask, toggleTaskComplete, deleteTask, editTask,
       victories, addVictory,
-      timeLogs, logTime, updateTimeLog, deleteTimeLog,
+      timeLogs, logTime,
       chatMessages, handleAIInput,
       suggestions, acceptSuggestion, rejectSuggestion, clearSuggestions,
       goals, addGoal, updateGoalProgress, deleteGoal,
