@@ -109,11 +109,11 @@ export const ProjectPage = () => {
               )}
             </div>
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
-              <span style={{ fontSize: '0.8rem', color: "#ffffff", textTransform: 'uppercase' }}>Excelente</span>
+              <span style={{ fontSize: '0.8rem', color: "gold", textTransform: 'uppercase' }}>Excelente</span>
               {isEditingTiers ? (
                 <input type="number" value={tiers.excellent} onChange={e => setTiers({...tiers, excellent: parseInt(e.target.value) || 0})} className="time-input" style={{ width: '100%', marginTop: '0.5rem', textAlign: 'center' }} />
               ) : (
-                <h4 style={{ margin: '0.5rem 0 0 0', fontSize: '1.2rem', color: "#ffffff" }}>{currentTiers.excellent}m</h4>
+                <h4 style={{ margin: '0.5rem 0 0 0', fontSize: '1.2rem', color: "gold" }}>{currentTiers.excellent}m</h4>
               )}
             </div>
           </div>
@@ -222,7 +222,7 @@ export const ProjectPage = () => {
       </div>
 
       <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.5rem' }}>
-        <Trophy size={24} color="#ffffff" /> Linha do Tempo (Timeline)
+        <Trophy size={24} color="gold" /> Linha do Tempo (Timeline)
       </h2>
 
       {sortedDates.length === 0 ? (
@@ -247,13 +247,13 @@ export const ProjectPage = () => {
                   {grouped[date].map(item => (
                     <div key={item.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', gap: '1.2rem', alignItems: 'center', transition: 'transform 0.2s', borderLeft: item.type === 'victory' ? '3px solid gold' : '3px solid var(--success)' }}>
                       {item.type === 'victory' ? (
-                        <Trophy size={22} color="#ffffff" style={{ flexShrink: 0 }} />
+                        <Trophy size={22} color="gold" style={{ flexShrink: 0 }} />
                       ) : (
                         <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />
                       )}
                       <div>
                         <span style={{ fontSize: '1rem', color: '#fff', lineHeight: '1.4' }}>{item.title}</span>
-                        {item.type === 'victory' && <span style={{ display: 'block', fontSize: '0.75rem', color: "#ffffff", marginTop: '0.3rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Relato de Vitória</span>}
+                        {item.type === 'victory' && <span style={{ display: 'block', fontSize: '0.75rem', color: "gold", marginTop: '0.3rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Relato de Vitória</span>}
                       </div>
                     </div>
                   ))}

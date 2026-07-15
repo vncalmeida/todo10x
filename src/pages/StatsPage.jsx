@@ -135,10 +135,10 @@ export const StatsPage = () => {
           
           <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
             <div style={{ background: 'rgba(255, 215, 0, 0.1)', padding: '1rem', borderRadius: '12px' }}>
-              <Flame size={32} color="#ffffff" />
+              <Flame size={32} color="gold" />
             </div>
             <div>
-              <h3 style={{ fontSize: '2rem', margin: '0', color: "#ffffff" }}>{maxStreak}</h3>
+              <h3 style={{ fontSize: '2rem', margin: '0', color: "gold" }}>{maxStreak}</h3>
               <p style={{ color: 'var(--text-secondary)', margin: '0', fontSize: '0.9rem' }}>Dias de Constância (Recorde)</p>
             </div>
           </div>
