@@ -45,6 +45,20 @@ export const Sidebar = ({ isOpen, onClose }) => {
             <Clock size={20} />
             <span>Timer Foco</span>
           </NavLink>
+          <button 
+            onClick={() => {
+              window.OneSignalDeferred = window.OneSignalDeferred || [];
+              window.OneSignalDeferred.push(function(OneSignal) {
+                OneSignal.Slidedown.promptPush();
+              });
+              if (onClose) onClose();
+            }}
+            className="sidebar-link" 
+            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', marginTop: '1rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem', borderRadius: 0 }}
+          >
+            <span style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>🔔</span>
+            <span>Ativar Notificações</span>
+          </button>
         </nav>
       </aside>
     </>
