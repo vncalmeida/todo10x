@@ -81,13 +81,13 @@ export const TaskProvider = ({ children }) => {
     setProjects(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
   };
 
-  const addTask = (projectId, title, date, goalId = null) => {
+  const addTask = (projectId, title, date, goalId = null, completed = false) => {
     const newTask = {
       id: Date.now().toString() + Math.random(),
       projectId,
       goalId,
       title,
-      completed: false,
+      completed: completed,
       date: date || new Date().toISOString().split('T')[0]
     };
     setTasks(prev => [...prev, newTask]);
@@ -352,7 +352,7 @@ export const TaskProvider = ({ children }) => {
           clearPendingTasks();
         }
         else if (action.type === 'CREATE_TASK') {
-          addTask(action.projectId || null, action.title);
+          addTask(projectId || null, action.title, null, null, action.completed || false);
         }
         else if (action.type === 'EDIT_TASK') {
           editTask(action.taskId, action.updates);
