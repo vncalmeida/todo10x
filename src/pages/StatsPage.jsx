@@ -160,7 +160,7 @@ export const StatsPage = () => {
           <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             Mapa de Constância ({currentYear})
           </h2>
-          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+          <div style={{ width: '100%', minWidth: 0, display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
             {weeks.map((week, wIdx) => (
               <div key={wIdx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {week.map((day, dIdx) => (
@@ -217,7 +217,7 @@ export const StatsPage = () => {
                   <p style={{ color: 'var(--text-secondary)' }}>Avalie como se sentiu por pelo menos 2 dias para visualizar o gráfico de flutuação.</p>
                 </div>
               ) : (
-                <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '1rem' }}>
+                <div style={{ width: '100%', minWidth: 0, overflowX: 'auto', paddingBottom: '1rem' }}>
                   <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', minWidth: '350px', height: 'auto', overflow: 'visible' }}>
                     {/* Linhas de grade horizontais */}
                     {[1, 2, 3, 4, 5].map(level => {
