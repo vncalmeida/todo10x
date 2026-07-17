@@ -4,14 +4,16 @@ import { useTaskContext } from '../context/TaskContext';
 import { triggerReward } from '../utils/rewards';
 
 export const Pomodoro = () => {
-  const { projects, logTime, handleAIInput } = useTaskContext();
-  const [customMinutes, setCustomMinutes] = useState(25);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [endTime, setEndTime] = useState(null);
+  const { 
+    projects, handleAIInput, 
+    pomodoroStatus: status, 
+    pomodoroEndTime: endTime, 
+    pomodoroTimeLeft: timeLeft, 
+    pomodoroProjectId: selectedProjectId, 
+    pomodoroCustomMinutes: customMinutes, 
+    setPomodoroState 
+  } = useTaskContext();
   
-  // State Machine: 'idle' | 'selecting' | 'working' | 'victory'
-  const [status, setStatus] = useState('idle');
-  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [victoryText, setVictoryText] = useState('');
 
   const playBeep = (freq = 440, type = 'sine') => {
@@ -44,27 +46,7 @@ export const Pomodoro = () => {
     };
   }, [status]);
 
-  useEffect(() => {
-    let interval = null;
-    if (status === 'working' && endTime) {
-      interval = setInterval(() => {
-        const now = Date.now();
-        const diff = Math.round((endTime - now) / 1000);
-        
-        if (diff <= 0) {
-          logTime(selectedProjectId, customMinutes);
-          triggerReward();
-          
-          setStatus('victory');
-          setEndTime(null);
-          setTimeLeft(customMinutes * 60);
-        } else {
-          setTimeLeft(diff);
-        }
-      }, 500);
-    }
-    return () => clearInterval(interval);
-  }, [status, endTime, customMinutes, selectedProjectId, logTime]);
+
 
   const handlePlayClick = () => {
     if (status === 'idle') {
@@ -72,26 +54,21 @@ export const Pomodoro = () => {
         alert("Crie um projeto primeiro!");
         return;
       }
-      setSelectedProjectId(projects[0].id);
-      setStatus('selecting');
+      setPomodoroState('selecting', projects[0].id);
     } else if (status === 'working') {
       // Pause
-      setStatus('idle');
-      setEndTime(null);
+      setPomodoroState('idle', undefined, null);
     }
   };
 
   const handleStartWorking = () => {
     if (!selectedProjectId) return;
-    setStatus('working');
-    setEndTime(Date.now() + timeLeft * 1000);
+    setPomodoroState('working', undefined, Date.now() + timeLeft * 1000);
     playBeep(600, 'triangle');
   };
 
   const reset = () => {
-    setStatus('idle');
-    setEndTime(null);
-    setTimeLeft(customMinutes * 60);
+    setPomodoroState('idle', undefined, null, customMinutes * 60);
     setVictoryText('');
   };
 
@@ -131,8 +108,8 @@ export const Pomodoro = () => {
           <h3>Em qual projeto vamos focar?</h3>
           <select 
             className="project-select"
-            value={selectedProjectId}
-            onChange={(e) => setSelectedProjectId(e.target.value)}
+            value={selectedProjectId || ''}
+            onChange={(e) => setPomodoroState(undefined, e.target.value)}
             style={{ width: '100%' }}
           >
             {projects.map(p => (
@@ -161,28 +138,37 @@ export const Pomodoro = () => {
             <span className="time">{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}</span>
           </div>
           
-          <div className="timer-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <input 
-              type="number" 
-              value={customMinutes} 
-              onChange={(e) => {
-                const val = Math.max(1, parseInt(e.target.value) || 1);
-                setCustomMinutes(val);
-                if(status === 'idle') setTimeLeft(val * 60);
-              }}
-              className="time-input"
-              disabled={status !== 'idle'}
-              min="1"
-              title="Minutos do Pomodoro"
-            />
-            <span style={{color: 'var(--text-secondary)', fontSize: '0.8rem', marginRight: '0.5rem'}}>min</span>
-            
-            <button onClick={handlePlayClick} className="btn-icon" title={status === 'working' ? 'Pausar' : 'Iniciar'}>
-              {status === 'working' ? <Pause size={18} /> : <Play size={18} />}
-            </button>
-            <button onClick={reset} className="btn-icon" title="Reiniciar">
-              <RotateCcw size={18} />
-            </button>
+          <div className="timer-controls" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '250px' }}>
+              {[15, 25, 40, 50].map(min => (
+                <button 
+                  key={min}
+                  onClick={() => setPomodoroState(undefined, undefined, undefined, min * 60, min)}
+                  style={{
+                    flex: 1,
+                    background: customMinutes === min ? 'var(--accent-primary)' : 'var(--glass-bg)',
+                    color: customMinutes === min ? '#000' : 'var(--text-secondary)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: '4px',
+                    padding: '0.3rem 0',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem',
+                    fontWeight: customMinutes === min ? 'bold' : 'normal',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {min}m
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button onClick={handlePlayClick} className="btn-icon" title={status === 'working' ? 'Pausar' : 'Iniciar'}>
+                {status === 'working' ? <Pause size={18} /> : <Play size={18} />}
+              </button>
+              <button onClick={reset} className="btn-icon" title="Reiniciar">
+                <RotateCcw size={18} />
+              </button>
+            </div>
           </div>
         </>
       )}

@@ -134,9 +134,15 @@ body {
 /* Glassmorphism Refinado */
 .glass-panel {
   background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
-  border-radius: 15px;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .glass-panel:hover {

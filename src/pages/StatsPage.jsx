@@ -218,7 +218,7 @@ export const StatsPage = () => {
                 </div>
               ) : (
                 <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '1rem' }}>
-                  <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', minWidth: '500px', height: 'auto', overflow: 'visible' }}>
+                  <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', minWidth: '350px', height: 'auto', overflow: 'visible' }}>
                     {/* Linhas de grade horizontais */}
                     {[1, 2, 3, 4, 5].map(level => {
                       const y = height - padding - ((level - 1) * ((height - padding * 2) / (maxScore - 1)));

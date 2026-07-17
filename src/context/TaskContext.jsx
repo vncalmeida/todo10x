@@ -22,6 +22,13 @@ export const TaskProvider = ({ children }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const skipSyncRef = useRef(true);
 
+  // Global Pomodoro State
+  const [pomodoroStatus, setPomodoroStatus] = useState('idle'); // 'idle' | 'selecting' | 'working' | 'victory'
+  const [pomodoroEndTime, setPomodoroEndTime] = useState(null);
+  const [pomodoroTimeLeft, setPomodoroTimeLeft] = useState(25 * 60);
+  const [pomodoroProjectId, setPomodoroProjectId] = useState(null);
+  const [pomodoroCustomMinutes, setPomodoroCustomMinutes] = useState(25);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -163,13 +170,12 @@ export const TaskProvider = ({ children }) => {
     const newLog = {
       id: Date.now().toString() + Math.random(),
       projectId,
-      durationInMinutes,
+      durationInMinutes: Math.round(durationInMinutes),
       date: logDate,
       timestamp: Date.now()
     };
     setTimeLogs(prev => [...prev, newLog]);
     
-    // Confetti if goal reached for today
     if (!pastDateStr) {
        const proj = projects.find(p => p.id === projectId);
        if (proj) {
@@ -391,7 +397,13 @@ export const TaskProvider = ({ children }) => {
       productivityRatings, addProductivityRating,
       quotes, addQuote, removeQuote,
       isLoaded,
-      isChatOpen, setIsChatOpen, breakDownTask
+      isChatOpen, setIsChatOpen, breakDownTask,
+      pomodoroStatus,
+      pomodoroEndTime,
+      pomodoroTimeLeft,
+      pomodoroProjectId,
+      pomodoroCustomMinutes,
+      setPomodoroState
     }}>
       {children}
     </TaskContext.Provider>
