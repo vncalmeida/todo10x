@@ -33,9 +33,8 @@ export const StreakCalendar = ({ projectId }) => {
        const p = projects.find(proj => proj.id === projectId);
        if (p && evaluateMet(p, dateStr)) met = true;
     } else {
-       projects.forEach(p => {
-          if (evaluateMet(p, dateStr)) met = true;
-       });
+       const workedGlobal = timeLogs.filter(l => l.date === dateStr).reduce((a,b) => a+b.durationInMinutes, 0);
+       if (workedGlobal >= 30) met = true;
     }
     
     currentWeek[currentDayOfWeek] = { date: i, dateStr, met, isToday: dateStr === today.toISOString().split('T')[0] };
@@ -87,9 +86,8 @@ export const StreakCalendar = ({ projectId }) => {
                         const p = projects.find(proj => proj.id === projectId);
                         if (p && evaluateMetNext(p, nextD)) nextMet = true;
                      } else {
-                        projects.forEach(p => {
-                           if (evaluateMetNext(p, nextD)) nextMet = true;
-                        });
+                        const workedGlobalNext = timeLogs.filter(l => l.date === nextD).reduce((a,b) => a+b.durationInMinutes, 0);
+                        if (workedGlobalNext >= 30) nextMet = true;
                      }
                      if (nextMet && dIdx < 6) {
                         return <div style={{ position: 'absolute', right: '-20%', top: '50%', width: '140%', height: '4px', background: 'var(--success)', zIndex: 1, transform: 'translateY(-50%)' }} />
