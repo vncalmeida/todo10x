@@ -412,9 +412,9 @@ export const TaskProvider = ({ children }) => {
     return result;
   };
 
-  const breakDownTask = async (taskTitle) => {
+  const breakDownTask = async (task) => {
     setIsChatOpen(true);
-    await handleAIInput(`Estou travado na tarefa "${taskTitle}". Por favor, quebre ela em 3 sub-tarefas atômicas e ridículas de fáceis e use SUGGEST_TASK.`);
+    await handleAIInput(`Estou travado na tarefa "${task.title}". Por favor, transforme essa tarefa em uma META usando a ação CREATE_GOAL. Quebre-a em 3 sub-tarefas atômicas ridículas de fáceis e as coloque no array 'tasks' da meta. E MUITO IMPORTANTE: use a ação DELETE_TASK passando o taskId "${task.id}" para apagar a tarefa original que acabou de ser transformada em meta.`);
   };
 
   return (

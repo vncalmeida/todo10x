@@ -166,7 +166,7 @@ export const TasksPage = () => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn-icon" onClick={() => breakDownTask(task.title)} title="Quebrar em passos menores" style={{ color: '#fbbf24' }}>
+                    <button className="btn-icon" onClick={() => breakDownTask(task)} title="Transformar em Meta e quebrar em passos" style={{ color: '#fbbf24' }}>
                       <Wand2 size={18} />
                     </button>
                     {editingTaskId === task.id ? (
@@ -307,7 +307,7 @@ export const TasksPage = () => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button className="btn-icon" onClick={() => breakDownTask(task.title)} title="Quebrar em passos menores" style={{ color: '#fbbf24' }}>
+                      <button className="btn-icon" onClick={() => breakDownTask(task)} title="Transformar em Meta e quebrar em passos" style={{ color: '#fbbf24' }}>
                         <Wand2 size={18} />
                       </button>
                       {editingTaskId === task.id ? (
