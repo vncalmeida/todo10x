@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getLocalYMD } from '../utils/dateUtils';
 import { useTaskContext } from '../context/TaskContext';
 import { Circle, Plus, Sparkles, CheckCircle, X, Edit2, Trash2, Save, Wand2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +30,7 @@ export const TasksPage = () => {
 
   const handleAddManualTask = (e) => {
     if (e.key === 'Enter' && newTaskTitle.trim()) {
-      addTask(newTaskProjectId || null, newTaskTitle.trim(), new Date().toISOString().split('T')[0]);
+      addTask(newTaskProjectId || null, newTaskTitle.trim(), getLocalYMD());
       setNewTaskTitle('');
     }
   };

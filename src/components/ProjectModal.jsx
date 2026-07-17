@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getLocalYMD } from '../utils/dateUtils';
 import { X, Calendar, Edit2, Check, Save } from 'lucide-react';
 import { useTaskContext } from '../context/TaskContext';
 
@@ -19,7 +20,7 @@ export const ProjectModal = ({ project, onClose }) => {
   const totalHours = Math.floor(totalMinutesWorked / 60);
   const remainingMinutes = totalMinutesWorked % 60;
   
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalYMD();
   const todayLogs = projectLogs.filter(log => log.date === todayStr);
   const timeWorkedToday = todayLogs.reduce((acc, log) => acc + log.durationInMinutes, 0);
 
@@ -153,11 +154,11 @@ export const ProjectModal = ({ project, onClose }) => {
               let dateLabel = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
               
               const today = new Date();
-              const todayStr = today.toISOString().split('T')[0];
+              const todayStr = getLocalYMD(today);
               const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-              const tomorrowStr = tomorrow.toISOString().split('T')[0];
+              const tomorrowStr = getLocalYMD(tomorrow);
               const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-              const yesterdayStr = yesterday.toISOString().split('T')[0];
+              const yesterdayStr = getLocalYMD(yesterday);
               
               if (date === todayStr) dateLabel = "Hoje";
               else if (date === tomorrowStr) dateLabel = "Amanhã";

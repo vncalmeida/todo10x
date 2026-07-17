@@ -1,4 +1,5 @@
 import { useTaskContext } from '../context/TaskContext';
+import { getLocalYMD } from '../utils/dateUtils';
 import { Flame } from 'lucide-react';
 
 export const StreakCalendar = ({ projectId }) => {
@@ -20,7 +21,7 @@ export const StreakCalendar = ({ projectId }) => {
   let currentDayOfWeek = startingDayOfWeek;
   for (let i = 1; i <= daysInMonth; i++) {
     const d = new Date(year, month, i);
-    const dateStr = d.toISOString().split('T')[0];
+    const dateStr = getLocalYMD(d);
     
     let met = false;
     const evaluateMet = (proj, dStr) => {
@@ -37,7 +38,7 @@ export const StreakCalendar = ({ projectId }) => {
        if (workedGlobal >= 30) met = true;
     }
     
-    currentWeek[currentDayOfWeek] = { date: i, dateStr, met, isToday: dateStr === today.toISOString().split('T')[0] };
+    currentWeek[currentDayOfWeek] = { date: i, dateStr, met, isToday: dateStr === getLocalYMD(today) };
     
     currentDayOfWeek++;
     if (currentDayOfWeek > 6) {
@@ -73,7 +74,7 @@ export const StreakCalendar = ({ projectId }) => {
               return (
                 <div key={dIdx} style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '40px' }}>
                   {isMet && day.date < daysInMonth && (() => {
-                     const nextD = new Date(year, month, day.date + 1).toISOString().split('T')[0];
+                     const nextD = getLocalYMD(new Date(year, month, day.date + 1));
                      let nextMet = false;
                      
                      const evaluateMetNext = (proj, dStr) => {

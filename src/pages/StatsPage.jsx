@@ -1,8 +1,9 @@
 import { useTaskContext } from '../context/TaskContext';
+import { getLocalYMD } from '../utils/dateUtils';
 import { BarChart2, Flame, Clock, Trophy, Target, CheckCircle } from 'lucide-react';
 
 export const StatsPage = () => {
-  const { timeLogs, projects, goals } = useTaskContext();
+  const { timeLogs, projects, goals, productivityRatings } = useTaskContext();
   
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -59,7 +60,7 @@ export const StatsPage = () => {
   const endOfYear = new Date(currentYear, 11, 31);
   
   for (let d = new Date(startOfYear); d <= endOfYear; d.setDate(d.getDate() + 1)) {
-    const dateStr = d.toISOString().split('T')[0];
+    const dateStr = getLocalYMD(d);
     const minutes = logsByDate[dateStr] || 0;
     heatmapData.push({ date: dateStr, minutes });
   }
@@ -187,6 +188,67 @@ export const StatsPage = () => {
             <span>Mais</span>
           </div>
         </div>
+
+        {/* Gráfico de Flutuação de Produtividade (Mood) */}
+        {(() => {
+          const sortedRatings = [...(productivityRatings || [])].sort((a,b) => a.date.localeCompare(b.date)).slice(-14);
+          const width = 800;
+          const height = 200;
+          const padding = 30;
+          const maxScore = 5;
+          
+          const getCoordinates = (index, score) => {
+            const x = padding + (index * ((width - padding * 2) / Math.max(1, sortedRatings.length - 1)));
+            const y = height - padding - ((score - 1) * ((height - padding * 2) / (maxScore - 1)));
+            return `${x},${y}`;
+          };
+
+          let pathData = '';
+          sortedRatings.forEach((r, idx) => {
+            if (idx === 0) pathData += `M ${getCoordinates(idx, r.score)} `;
+            else pathData += `L ${getCoordinates(idx, r.score)} `;
+          });
+
+          return (
+            <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2.5rem' }}>
+              <h2 style={{ marginBottom: '2rem', fontSize: '1.3rem' }}>Flutuação de Produtividade</h2>
+              {sortedRatings.length < 2 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+                  <p style={{ color: 'var(--text-secondary)' }}>Avalie como se sentiu por pelo menos 2 dias para visualizar o gráfico de flutuação.</p>
+                </div>
+              ) : (
+                <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '1rem' }}>
+                  <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', minWidth: '500px', height: 'auto', overflow: 'visible' }}>
+                    {/* Linhas de grade horizontais */}
+                    {[1, 2, 3, 4, 5].map(level => {
+                      const y = height - padding - ((level - 1) * ((height - padding * 2) / (maxScore - 1)));
+                      return <line key={`grid-${level}`} x1={padding} y1={y} x2={width - padding} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />;
+                    })}
+                    
+                    {/* Linha principal do gráfico */}
+                    <path d={pathData} fill="none" stroke="var(--accent-primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 4px 6px rgba(99, 102, 241, 0.4))' }} />
+                    
+                    {/* Pontos */}
+                    {sortedRatings.map((r, idx) => {
+                      const coords = getCoordinates(idx, r.score).split(',');
+                      const x = parseFloat(coords[0]);
+                      const y = parseFloat(coords[1]);
+                      const emojis = { 1: '😢', 2: '😕', 3: '😐', 4: '🙂', 5: '🤩' };
+                      const dateLabel = r.date.split('-').slice(1).reverse().join('/');
+                      return (
+                        <g key={idx}>
+                          <circle cx={x} cy={y} r="5" fill="var(--bg-primary)" stroke="var(--accent-primary)" strokeWidth="2" />
+                          <text x={x} y={y - 15} textAnchor="middle" fontSize="18px" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>{emojis[r.score]}</text>
+                          <text x={x} y={height} textAnchor="middle" fontSize="11px" fill="var(--text-secondary)">{dateLabel}</text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Gráfico Mensal */}
         <div className="glass-panel" style={{ padding: '2rem' }}>

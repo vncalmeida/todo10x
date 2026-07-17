@@ -1,4 +1,5 @@
 import { useTaskContext } from '../context/TaskContext';
+import { getLocalYMD } from '../utils/dateUtils';
 
 export const StreakGraph = () => {
   const { timeLogs } = useTaskContext();
@@ -8,7 +9,7 @@ export const StreakGraph = () => {
   for (let i = 29; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    days.push(d.toISOString().split('T')[0]);
+    days.push(getLocalYMD(d));
   }
 
   const goalMetPerDay = {};

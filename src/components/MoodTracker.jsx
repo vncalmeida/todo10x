@@ -1,8 +1,9 @@
 import { useTaskContext } from '../context/TaskContext';
+import { getLocalYMD } from '../utils/dateUtils';
 
 export const MoodTracker = () => {
   const { productivityRatings, addProductivityRating } = useTaskContext();
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalYMD();
   
   const todayRating = productivityRatings.find(r => r.date === todayStr);
 

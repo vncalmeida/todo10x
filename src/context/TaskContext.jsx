@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { getLocalYMD } from '../utils/dateUtils';
 import { processAIInput } from '../utils/aiService';
 import { supabase } from '../lib/supabase';
 import { triggerReward } from '../utils/rewards';
@@ -88,7 +89,7 @@ export const TaskProvider = ({ children }) => {
       goalId,
       title,
       completed: completed,
-      date: date || new Date().toISOString().split('T')[0]
+      date: date || getLocalYMD()
     };
     setTasks(prev => [...prev, newTask]);
     return newTask;
@@ -99,7 +100,7 @@ export const TaskProvider = ({ children }) => {
       id: Date.now().toString() + Math.random(),
       projectId,
       title,
-      date: date || new Date().toISOString().split('T')[0]
+      date: date || getLocalYMD()
     };
     setVictories(prev => [...prev, newVic]);
   };
@@ -158,7 +159,7 @@ export const TaskProvider = ({ children }) => {
   };
 
   const logTime = (projectId, durationInMinutes, pastDateStr = null) => {
-    const logDate = pastDateStr || new Date().toISOString().split('T')[0];
+    const logDate = pastDateStr || getLocalYMD();
     const newLog = {
       id: Date.now().toString() + Math.random(),
       projectId,
@@ -186,7 +187,7 @@ export const TaskProvider = ({ children }) => {
   };
 
   const addProductivityRating = (score) => {
-    const date = new Date().toISOString().split('T')[0];
+    const date = getLocalYMD();
     setProductivityRatings(prev => {
       const filtered = prev.filter(r => r.date !== date);
       return [...filtered, { date, score }];
@@ -231,7 +232,7 @@ export const TaskProvider = ({ children }) => {
         goalId,
         title: tTitle,
         completed: false,
-        date: new Date().toISOString().split('T')[0]
+        date: getLocalYMD()
       }));
       setTasks(prev => [...prev, ...newTasks]);
     }

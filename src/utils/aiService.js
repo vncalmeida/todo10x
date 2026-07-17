@@ -1,3 +1,4 @@
+import { getLocalYMD } from './dateUtils';
 export const processAIInput = async (text, currentProjects, chatHistory = [], tasks = [], goals = []) => {
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   if (!apiKey) {
@@ -7,11 +8,11 @@ export const processAIInput = async (text, currentProjects, chatHistory = [], ta
   }
 
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = getLocalYMD(today);
   const todayFull = today.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const yesterdayStr = getLocalYMD(yesterday);
   
   const pendingTasks = tasks.filter(t => !t.completed);
 

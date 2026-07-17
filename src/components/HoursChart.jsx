@@ -1,4 +1,5 @@
 import { useTaskContext } from '../context/TaskContext';
+import { getLocalYMD } from '../utils/dateUtils';
 import { BarChart3 } from 'lucide-react';
 
 export const HoursChart = () => {
@@ -9,7 +10,7 @@ export const HoursChart = () => {
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    days.push(d.toISOString().split('T')[0]);
+    days.push(getLocalYMD(d));
   }
 
   const data = days.map(date => {
