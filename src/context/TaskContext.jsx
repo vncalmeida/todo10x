@@ -165,6 +165,36 @@ export const TaskProvider = ({ children }) => {
     }, 100);
   };
 
+  useEffect(() => {
+    let interval = null;
+    if (pomodoroStatus === 'working' && pomodoroEndTime) {
+      interval = setInterval(() => {
+        const now = Date.now();
+        const diff = Math.round((pomodoroEndTime - now) / 1000);
+        
+        if (diff <= 0) {
+          logTime(pomodoroProjectId, pomodoroCustomMinutes);
+          triggerReward();
+          
+          setPomodoroStatus('victory');
+          setPomodoroEndTime(null);
+          setPomodoroTimeLeft(pomodoroCustomMinutes * 60);
+        } else {
+          setPomodoroTimeLeft(diff);
+        }
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [pomodoroStatus, pomodoroEndTime, pomodoroCustomMinutes, pomodoroProjectId]);
+
+  const setPomodoroState = (status, projectId, endTime, timeLeft, customMinutes) => {
+    if (status !== undefined) setPomodoroStatus(status);
+    if (projectId !== undefined) setPomodoroProjectId(projectId);
+    if (endTime !== undefined) setPomodoroEndTime(endTime);
+    if (timeLeft !== undefined) setPomodoroTimeLeft(timeLeft);
+    if (customMinutes !== undefined) setPomodoroCustomMinutes(customMinutes);
+  };
+
   const logTime = (projectId, durationInMinutes, pastDateStr = null) => {
     const logDate = pastDateStr || getLocalYMD();
     const newLog = {
