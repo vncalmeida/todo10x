@@ -290,13 +290,15 @@ export const TaskProvider = ({ children }) => {
   const addQuote = (text) => setQuotes(prev => [...prev, { id: Date.now().toString(), text }]);
   const removeQuote = (id) => setQuotes(prev => prev.filter(q => q.id !== id));
 
-  const handleAIInput = async (text) => {
-    const userMsg = { id: Date.now().toString(), role: 'user', text };
-    setChatMessages(prev => [...prev, userMsg]);
+  const handleAIInput = async (text, skipChat = false) => {
+    if (!skipChat) {
+      const userMsg = { id: Date.now().toString(), role: 'user', text };
+      setChatMessages(prev => [...prev, userMsg]);
+    }
 
     const result = await processAIInput(text, projects, chatMessages, tasks, goals);
     
-    if (result.text) {
+    if (result.text && !skipChat) {
       const aiMsg = { id: Date.now().toString() + 'ai', role: 'assistant', text: result.text };
       setChatMessages(prev => [...prev, aiMsg]);
     }
@@ -407,6 +409,7 @@ export const TaskProvider = ({ children }) => {
         setProjects(newProjects);
       }
     }
+    return result;
   };
 
   const breakDownTask = async (taskTitle) => {

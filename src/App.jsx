@@ -10,6 +10,7 @@ import { StatsPage } from './pages/StatsPage';
 import { TasksPage } from './pages/TasksPage';
 import { AIPage } from './pages/AIPage';
 import { TimerPage } from './pages/TimerPage';
+import { ProjectsPage } from './pages/ProjectsPage';
 import { ChatPanel } from './components/ChatPanel';
 import { Sidebar } from './components/Sidebar';
 import './App.css';
@@ -45,6 +46,7 @@ function App() {
         </div>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/project/:id" element={<ProjectPage />} />
           <Route path="/history" element={<GlobalHistory />} />
           <Route path="/quotes" element={<QuotesPage />} />

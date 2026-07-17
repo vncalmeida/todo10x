@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { BrainCircuit, Home, History, Quote, BarChart2, CheckSquare, X, Clock } from 'lucide-react';
+import { BrainCircuit, Home, History, Quote, BarChart2, CheckSquare, X, Clock, Target } from 'lucide-react';
 
 export const Sidebar = ({ isOpen, onClose }) => {
   return (
@@ -20,6 +20,10 @@ export const Sidebar = ({ isOpen, onClose }) => {
           <NavLink to="/" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
             <Home size={20} />
             <span>Dashboard</span>
+          </NavLink>
+          <NavLink to="/projects" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+            <Target size={20} />
+            <span>Projetos</span>
           </NavLink>
           <NavLink to="/tasks" onClick={onClose} className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
             <CheckSquare size={20} />
