@@ -195,14 +195,15 @@ export const TaskProvider = ({ children }) => {
     if (customMinutes !== undefined) setPomodoroCustomMinutes(customMinutes);
   };
 
-  const logTime = (projectId, durationInMinutes, pastDateStr = null) => {
+  const logTime = (projectId, durationInMinutes, pastDateStr = null, description = null) => {
     const logDate = pastDateStr || getLocalYMD();
     const newLog = {
       id: Date.now().toString() + Math.random(),
       projectId,
       durationInMinutes: Math.round(durationInMinutes),
       date: logDate,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      description: description || ''
     };
     setTimeLogs(prev => [...prev, newLog]);
     
@@ -347,7 +348,7 @@ export const TaskProvider = ({ children }) => {
         }
         else if (action.type === 'LOG_PAST_TIME' && projectId) {
           const duration = parseInt(String(action.durationInMinutes).replace(/[^0-9]/g, '')) || 60;
-          logTime(projectId, duration, action.date);
+          logTime(projectId, duration, action.date, action.description);
         }
         else if (action.type === 'CREATE_PROJECT') {
           const newProj = {

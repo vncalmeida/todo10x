@@ -88,8 +88,8 @@ Ações JSON possíveis e seus campos:
 9. "CREATE_GOAL": Cria meta. Campos: "type": "CREATE_GOAL", "projectId", "title", "target" (numero inteiro), "tasks" (array opcional de strings com titulos)
 10. "UPDATE_GOAL": Progresso. Campos: "type": "UPDATE_GOAL", "goalId", "current"
 11. "LOG_VICTORY": Registra vitória. Campos: "type": "LOG_VICTORY", "title", "projectId", "date" (Use a data exata em YYYY-MM-DD. Atenção: se for hoje, use a data atual do sistema mostrada acima!)
-12. "LOG_PAST_TIME": Registra tempo de trabalho (seja hoje ou ontem). Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes", "date" (Use a data exata em YYYY-MM-DD. Atenção: se for hoje, use a data atual do sistema!)
-    (MUITO IMPORTANTE SOBRE VITÓRIAS/FOCO: Se o usuário disser que concluiu algo num bloco de foco/vitória, VOCÊ DEVE CRIAR AS TAREFAS que ele mencionou usando CREATE_TASK com "completed": true, ALÉM de registrar o LOG_VICTORY. Não registre apenas o texto solto!)
+12. "LOG_PAST_TIME": Registra tempo de trabalho (seja hoje ou ontem). Campos: "type": "LOG_PAST_TIME", "projectId", "durationInMinutes", "date" (Use a data exata em YYYY-MM-DD), "description" (OPCIONAL. Uma string detalhando as tarefas feitas neste bloco de tempo, ex: "Fez a tarefa X, Y e Z").
+    (MUITO IMPORTANTE SOBRE VITÓRIAS/FOCO: Se o usuário disser que concluiu tarefas e trabalhou horas, VOCÊ DEVE CRIAR AS TAREFAS que ele mencionou usando CREATE_TASK com "completed": true, ALÉM de registrar o LOG_PAST_TIME preenchendo o campo "description" com os nomes das tarefas para que o histórico fique rico! Não registre apenas o tempo sem dizer o que foi feito!)
 
 **Exemplo de Resposta:**
 Entendido, chefe. Criei o projeto de Finanças e movi a tarefa de imposto para ele.

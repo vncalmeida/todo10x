@@ -11,7 +11,8 @@ export const GlobalHistory = () => {
   const allTimeLogs = timeLogs.map(l => ({ 
     ...l, 
     type: 'time', 
-    title: `Sessão de Foco: ${l.durationInMinutes >= 60 ? Math.floor(l.durationInMinutes / 60) + 'h ' : ''}${l.durationInMinutes % 60 > 0 ? (l.durationInMinutes % 60) + 'm' : ''}`.trim()
+    title: `Sessão de Foco: ${l.durationInMinutes >= 60 ? Math.floor(l.durationInMinutes / 60) + 'h ' : ''}${l.durationInMinutes % 60 > 0 ? (l.durationInMinutes % 60) + 'm' : ''}`.trim(),
+    description: l.description
   }));
   
   const allEvents = [...allTasks, ...allVictories, ...allTimeLogs];
@@ -61,6 +62,11 @@ export const GlobalHistory = () => {
                         {item.type === 'victory' ? <Trophy size={22} color="gold" style={{ flexShrink: 0 }} /> : item.type === 'time' ? <History size={22} color="var(--accent-primary)" style={{ flexShrink: 0 }} /> : <CheckCircle size={22} color="var(--success)" style={{ flexShrink: 0 }} />}
                         <div>
                           <span style={{ fontSize: '1rem', color: '#fff' }}>{item.title}</span>
+                          {item.description && (
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem', fontStyle: 'italic' }}>
+                              "{item.description}"
+                            </p>
+                          )}
                           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem', alignItems: 'center' }}>
                              {proj && <span className="task-project-badge" style={{ borderColor: proj.color || 'var(--glass-border)', color: proj.color || '#fff' }}>{proj.name}</span>}
                              {item.type === 'victory' && <span style={{ fontSize: '0.75rem', color: "gold", textTransform: 'uppercase', letterSpacing: '1px' }}>Vitória</span>}
