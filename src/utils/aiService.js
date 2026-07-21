@@ -137,6 +137,11 @@ Entendido, chefe. Criei o projeto de Finanças e movi a tarefa de imposto para e
       if (rawJson.startsWith('```json')) rawJson = rawJson.replace(/^```json/, '').replace(/```$/, '').trim();
       else if (rawJson.startsWith('```')) rawJson = rawJson.replace(/^```/, '').replace(/```$/, '').trim();
       actionsPart = rawJson;
+    } else if (content.includes("```json")) {
+      // Fallback if AI forgets ===ACTIONS=== but includes a JSON block
+      const parts = content.split("```json");
+      textPart = parts[0].trim();
+      actionsPart = parts[1].split("```")[0].trim();
     }
 
     let actions = [];
