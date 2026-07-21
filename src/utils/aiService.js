@@ -137,11 +137,17 @@ Entendido, chefe. Criei o projeto de Finanças e movi a tarefa de imposto para e
       if (rawJson.startsWith('```json')) rawJson = rawJson.replace(/^```json/, '').replace(/```$/, '').trim();
       else if (rawJson.startsWith('```')) rawJson = rawJson.replace(/^```/, '').replace(/```$/, '').trim();
       actionsPart = rawJson;
-    } else if (content.includes("```json")) {
-      // Fallback if AI forgets ===ACTIONS=== but includes a JSON block
-      const parts = content.split("```json");
-      textPart = parts[0].trim();
-      actionsPart = parts[1].split("```")[0].trim();
+    } else {
+      // Aggressive fallback: just find the first '[' and last ']'
+      const firstBracket = content.indexOf('[');
+      const lastBracket = content.lastIndexOf(']');
+      if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+        actionsPart = content.substring(firstBracket, lastBracket + 1);
+        textPart = content.substring(0, firstBracket).trim();
+        // Remove markdown artifacts if they got caught in textPart
+        if (textPart.endsWith('```json')) textPart = textPart.replace(/```json$/, '').trim();
+        if (textPart.endsWith('```')) textPart = textPart.replace(/```$/, '').trim();
+      }
     }
 
     let actions = [];
