@@ -128,6 +128,7 @@ export const TasksPage = () => {
           ) : (
             looseTasks.map(task => {
               const project = projects.find(p => p.id === task.projectId);
+              const goal = task.goalId ? goals?.find(g => g.id === task.goalId) : null;
               return (
                 <div key={task.id} className="glass-panel" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
@@ -156,13 +157,18 @@ export const TasksPage = () => {
                     ) : (
                       <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
                     )}
-                    <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem', alignItems: 'center' }}>
                       {project ? (
-                        <span style={{ color: project.color || 'var(--accent-primary)', fontWeight: '500' }}>{project.name}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: project.color || 'var(--accent-primary)', opacity: 0.8 }} />
+                          <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                            {project.name} {goal ? `- ${goal.title}` : ''}
+                          </span>
+                        </div>
                       ) : (
                         <span style={{ color: 'var(--text-secondary)' }}>Geral</span>
                       )}
-                      <span style={{ border: '1px solid var(--glass-border)', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)' }}>{task.date}</span>
+                      <span style={{ border: '1px solid var(--glass-border)', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)', borderRadius: '4px' }}>{task.date}</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -301,9 +307,18 @@ export const TasksPage = () => {
                       ) : (
                         <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
                       )}
-                      <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
-                        <span style={{ color: project ? (project.color || 'var(--accent-primary)') : 'var(--text-secondary)', fontWeight: '500' }}>{project ? project.name : 'Geral'}</span>
-                        <span style={{ border: '1px solid #333', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)' }}>{task.date}</span>
+                      <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem', alignItems: 'center' }}>
+                        {project ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: project.color || 'var(--accent-primary)', opacity: 0.8 }} />
+                            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                              {project.name} {goal ? `- ${goal.title}` : ''}
+                            </span>
+                          </div>
+                        ) : (
+                          <span style={{ color: 'var(--text-secondary)' }}>Geral</span>
+                        )}
+                        <span style={{ border: '1px solid #333', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)', borderRadius: '4px' }}>{task.date}</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>

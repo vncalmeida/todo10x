@@ -4,7 +4,7 @@ import { Circle, Edit2, Trash2, Save, Wand2 } from 'lucide-react';
 import { getLocalYMD } from '../utils/dateUtils';
 
 export const HomeTasks = () => {
-  const { projects, tasks, toggleTaskComplete, deleteTask, editTask, breakDownTask, addTask } = useTaskContext();
+  const { projects, tasks, goals, toggleTaskComplete, deleteTask, editTask, breakDownTask, addTask } = useTaskContext();
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
   const [editingTaskProjectId, setEditingTaskProjectId] = useState('');
@@ -44,6 +44,7 @@ export const HomeTasks = () => {
       ) : (
         pendingTasks.map(task => {
           const project = projects.find(p => p.id === task.projectId);
+          const goal = task.goalId ? goals?.find(g => g.id === task.goalId) : null;
           return (
             <div key={task.id} className="glass-panel" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0 }}>
               <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
@@ -66,7 +67,12 @@ export const HomeTasks = () => {
                 )}
                 <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
                   {project ? (
-                    <span style={{ color: project.color || 'var(--accent-primary)', fontWeight: '500' }}>{project.name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: project.color || 'var(--accent-primary)', opacity: 0.8 }} />
+                      <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                        {project.name} {goal ? `- ${goal.title}` : ''}
+                      </span>
+                    </div>
                   ) : (
                     <span style={{ color: 'var(--text-secondary)' }}>Geral</span>
                   )}

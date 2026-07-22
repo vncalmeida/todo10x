@@ -197,13 +197,9 @@ export const ProjectPage = () => {
                   
                   <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)', borderTop: 'none', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                     {goalTasks.map(task => (
-                      <div key={task.id} className="glass-panel" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#0a0a0a', border: '1px solid #333' }}>
-                        <button 
-                          className="btn-icon" 
-                          style={{ width: '28px', height: '28px', background: task.completed ? 'var(--success)' : 'transparent', border: task.completed ? 'none' : '2px solid var(--text-secondary)' }}
-                          onClick={() => toggleTaskComplete(task.id)}
-                        >
-                          {task.completed && <CheckCircle size={18} color="#000" />}
+                      <div key={task.id} className="task-card-flat" style={{ marginBottom: 0 }}>
+                        <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
+                          {task.completed ? <CheckCircle size={22} color="var(--success)" /> : <Circle size={22} color="var(--text-secondary)" />}
                         </button>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>

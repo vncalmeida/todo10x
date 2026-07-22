@@ -92,6 +92,10 @@ export const TaskProvider = ({ children }) => {
     setProjects(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
   };
 
+  const addGoalTask = (projectId, goalId, title) => {
+    addTask(projectId, title, getLocalYMD(), goalId);
+  };
+
   const addTask = (projectId, title, date, goalId = null, completed = false) => {
     const newTask = {
       id: Date.now().toString() + Math.random(),
