@@ -8,7 +8,7 @@ export const ProjectModal = ({ project, onClose }) => {
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [tempGoal, setTempGoal] = useState(project?.dailyGoal || 30);
 
-  const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [isEditingDetails, setIsEditingDetails] = useState(true);
   const [editName, setEditName] = useState(project?.name || '');
   const [editDesc, setEditDesc] = useState(project?.description || '');
   const [editColor, setEditColor] = useState(project?.color || PROJECT_COLORS[0]);
@@ -32,7 +32,7 @@ export const ProjectModal = ({ project, onClose }) => {
 
   const handleSaveDetails = () => {
     updateProject(project.id, { name: editName, description: editDesc, color: editColor });
-    setIsEditingDetails(false);
+    onClose();
   };
 
   // Filtro de tarefas
@@ -59,6 +59,12 @@ export const ProjectModal = ({ project, onClose }) => {
         
         {isEditingDetails ? (
           <div className="modal-header-edit" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Editar Projeto</h2>
+              <button onClick={onClose} className="btn-icon">
+                <X size={24} />
+              </button>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <input 
                 type="text" 
