@@ -186,14 +186,17 @@ export const ProjectPage = () => {
 
               return (
                 <div key={goal.id}>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                    <div style={{ background: 'transparent', color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                      <Flag size={18} style={{ display: 'inline', marginRight: '8px', color: 'var(--text-secondary)' }} />
-                      {goal.title}
+                  <div className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--glass-border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginRight: '1rem' }}>
+                        META
+                      </div>
+                      <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600' }}>
+                        {goal.title}
+                      </div>
                     </div>
-                  </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', paddingLeft: '1rem', borderLeft: '2px solid var(--glass-border)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                     {goalTasks.map(task => (
                       <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: `3px solid ${project?.color || '#ffffff'}` }}>
                         <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
@@ -231,6 +234,7 @@ export const ProjectPage = () => {
                         </div>
                       </div>
                     ))}
+                    </div>
                   </div>
                 </div>
               );
