@@ -3,6 +3,8 @@ import { useTaskContext } from '../context/TaskContext';
 import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus, Trash2, History } from 'lucide-react';
 import { useState } from 'react';
 import { StreakCalendar } from '../components/StreakCalendar';
+import { ProjectModal } from '../components/ProjectModal';
+import { Settings } from 'lucide-react';
 
 export const ProjectPage = () => {
   const { id } = useParams();
@@ -16,6 +18,7 @@ export const ProjectPage = () => {
   const [newGoalTasksText, setNewGoalTasksText] = useState('');
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
+  const [isEditingProject, setIsEditingProject] = useState(false);
   
   const project = projects.find(p => p.id === id);
   
@@ -90,7 +93,12 @@ export const ProjectPage = () => {
 
       <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '3rem', border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(145deg, rgba(30,30,40,0.8), rgba(15,15,20,0.9))' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-          <h1 className="text-gradient" style={{ fontSize: '2.5rem', margin: 0 }}>{project.name}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <h1 className="text-gradient" style={{ fontSize: '2.5rem', margin: 0 }}>{project.name}</h1>
+            <button onClick={() => setIsEditingProject(true)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '8px' }}>
+              <Settings size={20} color="var(--text-secondary)" />
+            </button>
+          </div>
           <div style={{ textAlign: 'right', background: 'rgba(255,255,255,0.05)', padding: '0.8rem 1rem', borderRadius: '12px' }}>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Tempo Total</p>
             <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--accent-primary)', margin: 0 }}>{timeString}</p>
@@ -328,6 +336,36 @@ export const ProjectPage = () => {
             );
           })}
         </div>
+      )}
+      {isCreatingGoal && (
+        <div className="modal-overlay animate-fade-in" onClick={() => setIsCreatingGoal(false)}>
+          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <h2 style={{ marginBottom: '1.5rem' }}>Criar Nova Meta</h2>
+            <input 
+              type="text" 
+              placeholder="Nome da Meta (ex: Lançamento do Site)" 
+              value={newGoalTitle} 
+              onChange={(e) => setNewGoalTitle(e.target.value)} 
+              className="time-input" 
+              style={{ width: '100%', marginBottom: '1rem', textAlign: 'left', padding: '1rem' }} 
+            />
+            <textarea 
+              placeholder="Digite as tarefas dessa meta (uma por linha)&#10;Ex:&#10;Fazer design&#10;Aprovar textos"
+              value={newGoalTasksText}
+              onChange={(e) => setNewGoalTasksText(e.target.value)}
+              className="time-input"
+              style={{ width: '100%', textAlign: 'left', minHeight: '120px', resize: 'vertical', marginBottom: '1.5rem', padding: '1rem' }}
+            />
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button className="btn-small" onClick={() => setIsCreatingGoal(false)}>Cancelar</button>
+              <button className="btn-small" onClick={handleCreateGoal} style={{ background: 'var(--text-primary)', color: '#000' }}>Criar Meta</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isEditingProject && (
+        <ProjectModal project={project} onClose={() => setIsEditingProject(false)} />
       )}
     </div>
   );
