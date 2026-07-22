@@ -197,7 +197,7 @@ export const ProjectPage = () => {
                   
                   <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)', borderTop: 'none', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                     {goalTasks.map(task => (
-                      <div key={task.id} className="task-card-flat" style={{ marginBottom: 0 }}>
+                      <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#0a0a0a', borderLeft: `4px solid ${project.color || 'var(--accent-primary)'}` }}>
                         <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
                           {task.completed ? <CheckCircle size={22} color="var(--success)" /> : <Circle size={22} color="var(--text-secondary)" />}
                         </button>

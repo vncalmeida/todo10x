@@ -130,7 +130,7 @@ export const TasksPage = () => {
               const project = projects.find(p => p.id === task.projectId);
               const goal = task.goalId ? goals?.find(g => g.id === task.goalId) : null;
               return (
-                <div key={task.id} className="glass-panel" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: `4px solid ${project ? (project.color || 'var(--accent-primary)') : 'var(--text-secondary)'}` }}>
                   <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
                     <Circle size={22} color="var(--text-secondary)" />
                   </button>
@@ -283,7 +283,7 @@ export const TasksPage = () => {
               {/* TASKS CONTAINER */}
               <div style={{ border: '1px solid var(--glass-border)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-secondary)' }}>
                 {goalTasks.map(task => (
-                  <div key={task.id} className="glass-panel" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#0a0a0a', border: '1px solid #333' }}>
+                  <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#0a0a0a', borderLeft: `4px solid ${project ? (project.color || 'var(--accent-primary)') : '#333'}` }}>
                     <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
                       <Circle size={22} color="var(--text-secondary)" />
                     </button>
