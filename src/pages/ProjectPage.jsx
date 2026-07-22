@@ -186,18 +186,16 @@ export const ProjectPage = () => {
 
               return (
                 <div key={goal.id}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ background: '#D4AF37', color: '#000', padding: '0.8rem 1.5rem', fontWeight: '900', fontSize: '1.5rem', letterSpacing: '2px', lineHeight: '1' }}>
-                      META
-                    </div>
-                    <div style={{ background: 'transparent', color: '#fff', padding: '0.8rem 1.5rem', fontWeight: '800', fontSize: '1.2rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                    <div style={{ background: 'transparent', color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                      <Flag size={18} style={{ display: 'inline', marginRight: '8px', color: 'var(--text-secondary)' }} />
                       {goal.title}
                     </div>
                   </div>
                   
-                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)', borderTop: 'none', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', paddingLeft: '1rem', borderLeft: '2px solid var(--glass-border)' }}>
                     {goalTasks.map(task => (
-                      <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: `3px solid ${project.color || 'transparent'}`, boxShadow: project.color ? `inset 15px 0 25px -15px ${project.color}` : 'none' }}>
+                      <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: `3px solid ${project?.color || '#ffffff'}` }}>
                         <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
                           {task.completed ? <CheckCircle size={22} color="var(--success)" /> : <Circle size={22} color="var(--text-secondary)" />}
                         </button>
