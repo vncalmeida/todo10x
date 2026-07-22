@@ -46,7 +46,7 @@ export const HomeTasks = () => {
           const project = projects.find(p => p.id === task.projectId);
           const goal = task.goalId ? goals?.find(g => g.id === task.goalId) : null;
           return (
-            <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0, borderLeft: `4px solid ${project ? (project.color || 'var(--accent-primary)') : 'var(--text-secondary)'}` }}>
+            <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0, borderLeft: `3px solid ${project ? project.color : 'transparent'}`, boxShadow: project ? `inset 15px 0 25px -15px ${project.color}` : 'none' }}>
               <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
                 <Circle size={22} color="var(--text-secondary)" />
               </button>
