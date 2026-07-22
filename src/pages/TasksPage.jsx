@@ -158,9 +158,9 @@ export const TasksPage = () => {
                     )}
                     <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
                       {project ? (
-                        <span style={{ border: `1px solid ${project.color || 'var(--glass-border)'}`, padding: '0.1rem 0.5rem', color: project.color || '#fff' }}>{project.name}</span>
+                        <span style={{ color: project.color || 'var(--accent-primary)', fontWeight: '500' }}>{project.name}</span>
                       ) : (
-                        <span style={{ border: '1px solid var(--glass-border)', padding: '0.1rem 0.5rem', color: '#fff' }}>Geral</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>Geral</span>
                       )}
                       <span style={{ border: '1px solid var(--glass-border)', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)' }}>{task.date}</span>
                     </div>
@@ -302,7 +302,7 @@ export const TasksPage = () => {
                         <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
                       )}
                       <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
-                        <span style={{ border: `1px solid ${project ? (project.color || '#333') : '#333'}`, padding: '0.1rem 0.5rem', color: project ? (project.color || '#fff') : '#fff' }}>{project ? project.name : 'Geral'}</span>
+                        <span style={{ color: project ? (project.color || 'var(--accent-primary)') : 'var(--text-secondary)', fontWeight: '500' }}>{project ? project.name : 'Geral'}</span>
                         <span style={{ border: '1px solid #333', padding: '0.1rem 0.5rem', color: 'var(--text-secondary)' }}>{task.date}</span>
                       </div>
                     </div>

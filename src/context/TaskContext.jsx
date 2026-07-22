@@ -71,6 +71,8 @@ export const TaskProvider = ({ children }) => {
   }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, goals, isLoaded]);
 
 
+  const PROJECT_COLORS = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e'];
+
   const addProject = (name, description, milestones = '') => {
     const newProject = {
       id: Date.now().toString(),
@@ -79,6 +81,7 @@ export const TaskProvider = ({ children }) => {
       milestones,
       status: 'active',
       progress: 0,
+      color: PROJECT_COLORS[Math.floor(Math.random() * PROJECT_COLORS.length)],
       timeTiers: { ok: 10, good: 30, excellent: 60 }
     };
     setProjects(prev => [...prev, newProject]);
