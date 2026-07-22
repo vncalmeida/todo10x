@@ -67,8 +67,11 @@ export const HomeTasks = () => {
                 )}
                 <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
                   {project ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: project.color || 'var(--accent-primary)', opacity: 0.8 }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ position: 'relative', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', backgroundColor: project.color || 'var(--accent-primary)', opacity: 0.15 }} />
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: project.color || 'var(--accent-primary)', position: 'relative', zIndex: 1 }} />
+                      </div>
                       <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                         {project.name} {goal ? `- ${goal.title}` : ''}
                       </span>
