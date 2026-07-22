@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { getLocalYMD } from '../utils/dateUtils';
 import { X, Calendar, Edit2, Check, Save } from 'lucide-react';
-import { useTaskContext } from '../context/TaskContext';
+import { useTaskContext, PROJECT_COLORS } from '../context/TaskContext';
 
 export const ProjectModal = ({ project, onClose }) => {
-  const { tasks, timeLogs, updateProjectGoal, updateProjectDetails } = useTaskContext();
+  const { tasks, timeLogs, updateProject } = useTaskContext();
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [tempGoal, setTempGoal] = useState(project?.dailyGoal || 30);
 
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editName, setEditName] = useState(project?.name || '');
   const [editDesc, setEditDesc] = useState(project?.description || '');
+  const [editColor, setEditColor] = useState(project?.color || PROJECT_COLORS[0]);
 
   if (!project) return null;
 
@@ -25,12 +26,12 @@ export const ProjectModal = ({ project, onClose }) => {
   const timeWorkedToday = todayLogs.reduce((acc, log) => acc + log.durationInMinutes, 0);
 
   const handleSaveGoal = () => {
-    updateProjectGoal(project.id, tempGoal);
+    updateProject(project.id, { dailyGoal: tempGoal });
     setIsEditingGoal(false);
   };
 
   const handleSaveDetails = () => {
-    updateProjectDetails(project.id, editName, editDesc);
+    updateProject(project.id, { name: editName, description: editDesc, color: editColor });
     setIsEditingDetails(false);
   };
 
@@ -77,6 +78,28 @@ export const ProjectModal = ({ project, onClose }) => {
               style={{ width: '100%', textAlign: 'left', minHeight: '60px', resize: 'none' }}
               placeholder="Adicionar descrição ao projeto..."
             />
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Cor do Projeto</label>
+              <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+                {PROJECT_COLORS.map(color => (
+                  <button
+                    key={color}
+                    onClick={() => setEditColor(color)}
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      backgroundColor: color,
+                      border: editColor === color ? '3px solid #fff' : '2px solid transparent',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: editColor === color ? `0 0 10px ${color}` : 'none'
+                    }}
+                    title="Selecionar cor"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="modal-header-view" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
