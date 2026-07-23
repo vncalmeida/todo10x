@@ -7,21 +7,12 @@ import { HoursChart } from '../components/HoursChart';
 import { MoodTracker } from '../components/MoodTracker';
 import { ChatPanel } from '../components/ChatPanel';
 import { Pomodoro } from '../components/Pomodoro';
-import { DailyTaskAssistant } from '../components/DailyTaskAssistant';
 import { HomeTasks } from '../components/HomeTasks';
 
 export const Home = () => {
-  const { projects, tasks, toggleTaskComplete, goals, addTask, clearPendingTasks, quotes, deleteTask, breakDownTask } = useTaskContext();
+  const { projects, quotes } = useTaskContext();
   const [dailyQuote, setDailyQuote] = useState('');
-  const [newTaskTitle, setNewTaskTitle] = useState('');
   const navigate = useNavigate();
-
-  const handleAddManualTask = (e) => {
-    if (e.key === 'Enter' && newTaskTitle.trim()) {
-      addTask(null, newTaskTitle.trim());
-      setNewTaskTitle('');
-    }
-  };
 
   useEffect(() => {
     if (quotes.length > 0) {
@@ -52,7 +43,6 @@ export const Home = () => {
           <div className="left-column">
             
             <section className="tasks-section" style={{ marginBottom: '2.5rem' }}>
-              <DailyTaskAssistant />
               <HomeTasks />
             </section>
 
