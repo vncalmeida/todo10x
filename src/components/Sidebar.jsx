@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { BrainCircuit, Home, History, Quote, BarChart2, CheckSquare, X, Clock, Target } from 'lucide-react';
 
-export const Sidebar = ({ isOpen, onClose }) => {
+export const Sidebar = ({ isOpen, onClose, onOpenBrain }) => {
   return (
     <>
       <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
@@ -49,6 +49,11 @@ export const Sidebar = ({ isOpen, onClose }) => {
             <Clock size={20} />
             <span>Timer Foco</span>
           </NavLink>
+          <button onClick={onOpenBrain} className="sidebar-link" style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', color: 'var(--accent-primary)', fontWeight: 'bold' }}>
+            <BrainCircuit size={20} />
+            <span>Cérebro da IA</span>
+          </button>
+          
           <button 
             onClick={() => {
               window.OneSignalDeferred = window.OneSignalDeferred || [];

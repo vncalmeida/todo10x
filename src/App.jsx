@@ -13,11 +13,13 @@ import { TimerPage } from './pages/TimerPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ChatPanel } from './components/ChatPanel';
 import { Sidebar } from './components/Sidebar';
+import { AIBrainModal } from './components/AIBrainModal';
 import './App.css';
 
 function App() {
   const { isLoaded } = useTaskContext();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isBrainModalOpen, setIsBrainModalOpen] = useState(false);
   const location = useLocation();
 
   if (!isLoaded) {
@@ -33,7 +35,11 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+        onOpenBrain={() => { setIsSidebarOpen(false); setIsBrainModalOpen(true); }}
+      />
       <div className="main-wrapper">
         <div className="mobile-header">
           <button className="btn-icon" onClick={() => setIsSidebarOpen(true)}>
@@ -57,6 +63,11 @@ function App() {
         </Routes>
       </div>
       {location.pathname !== '/ai' && <ChatPanel />}
+      
+      <AIBrainModal 
+        isOpen={isBrainModalOpen} 
+        onClose={() => setIsBrainModalOpen(false)} 
+      />
     </div>
   );
 }

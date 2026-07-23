@@ -1,5 +1,5 @@
 import { getLocalYMD } from './dateUtils';
-export const processAIInput = async (text, currentProjects, chatHistory = [], tasks = [], goals = []) => {
+export const processAIInput = async (text, currentProjects, chatHistory = [], tasks = [], goals = [], customSystemPrompt = '') => {
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   if (!apiKey) {
     console.error("DeepSeek API Key não configurada!");
@@ -56,6 +56,9 @@ ${projectList || "Nenhum projeto cadastrado."}
 
 TAREFAS AVULSAS (SEM PROJETO):
 ${looseTasksText}
+
+**CONTEXTO DO USUÁRIO (SOPs, PERFIL E REGRAS):**
+${customSystemPrompt}
 
 **Contexto Especial:**
 Se o usuário iniciar a mensagem com "CONTEXTO_TASK_ASSISTANT", significa que ele está na tela inicial planejando o dia. Ele pode pedir para criar tarefas, ou desabafar que está travado em algo.

@@ -10,18 +10,44 @@ export const useTaskContext = () => useContext(TaskContext);
 
 export const PROJECT_COLORS = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e'];
 
+const DEFAULT_AI_PROMPT = `
+# Contexto Mestre — Vinícius Almeida e seus negócios
+
+## 1. Quem é Vinícius Almeida
+Meu nome é Vinícius Almeida. Também utilizo os nomes Vinícius10X e Milionário Anônimo em alguns projetos.
+Sou um empreendedor digital especializado na criação, monetização e gestão de canais anônimos ou faceless no YouTube. Trabalho nesse mercado desde 2020 e já criei mais de 100 canais.
+
+## 2. Business 1 — Operação de Canais
+A Operação de Canais é o meu negócio de mídia. Eu crio e administro canais anônimos no YouTube. O objetivo é produzir vídeos que gerem audiência e receita.
+
+## 3. Business 2 — Projeto Mentoria e Produtos
+O Projeto Mentoria é meu negócio de educação, produtos digitais, consultoria e software. Ensino pessoas a construir ativos de mídia e negócios no YouTube sem precisar aparecer.
+
+## 4. Como a IA deve me ajudar
+1. Identificar o business (Canais ou Mentoria).
+2. Identificar o tipo de demanda.
+3. Definir o resultado esperado.
+4. Transformar em projeto ou próxima ação concreta.
+5. Priorizar (P1, P2, P3, P4).
+6. Estimar tempo realista.
+7. Sugerir ordem de execução clara.
+
+Evite planos longos se eu quiser apenas agir. Me de a próxima ação e crie as tarefas ou metas de forma organizada!
+`;
+
 export const TaskProvider = ({ children }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [goals, setGoals] = useState([]);
+  const [victories, setVictories] = useState([]);
   const [timeLogs, setTimeLogs] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
-  const [victories, setVictories] = useState([]);
-  const [quotes, setQuotes] = useState([]);
-  const [goals, setGoals] = useState([]);
   const [productivityRatings, setProductivityRatings] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [quotes, setQuotes] = useState([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [aiSystemPrompt, setAiSystemPrompt] = useState(DEFAULT_AI_PROMPT);
   const skipSyncRef = useRef(true);
 
   // Global Pomodoro State
@@ -48,8 +74,12 @@ export const TaskProvider = ({ children }) => {
           setGoals(payload.goals || []);
         }
       } catch (err) {
-        console.error("Erro ao puxar dados da nuvem:", err);
-      } finally {
+        const savedQuotes = localStorage.getItem('todo10x_quotes');
+        if (savedQuotes) setQuotes(JSON.parse(savedQuotes));
+        
+        const savedAiPrompt = localStorage.getItem('todo10x_ai_prompt');
+        if (savedAiPrompt) setAiSystemPrompt(savedAiPrompt);
+        
         setIsLoaded(true);
         setTimeout(() => { skipSyncRef.current = false; }, 500);
       }
@@ -72,8 +102,17 @@ export const TaskProvider = ({ children }) => {
     return () => clearTimeout(debounceTimer);
   }, [projects, tasks, timeLogs, chatMessages, suggestions, victories, productivityRatings, quotes, goals, isLoaded]);
 
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('todo10x_quotes', JSON.stringify(quotes));
+    }
+  }, [quotes, isLoaded]);
 
-
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('todo10x_ai_prompt', aiSystemPrompt);
+    }
+  }, [aiSystemPrompt, isLoaded]);
 
   const addProject = (name, description, color = null, milestones = '') => {
     const newProject = {
@@ -309,7 +348,7 @@ export const TaskProvider = ({ children }) => {
       setChatMessages(prev => [...prev, userMsg]);
     }
 
-    const result = await processAIInput(text, projects, chatMessages, tasks, goals);
+    const result = await processAIInput(text, projects, chatMessages, tasks, goals, aiSystemPrompt);
     
     if (result.text && !skipChat) {
       const aiMsg = { id: Date.now().toString() + 'ai', role: 'assistant', text: result.text };
@@ -449,7 +488,8 @@ export const TaskProvider = ({ children }) => {
       pomodoroTimeLeft,
       pomodoroProjectId,
       pomodoroCustomMinutes,
-      setPomodoroState
+      setPomodoroState,
+      aiSystemPrompt, setAiSystemPrompt
     }}>
       {children}
     </TaskContext.Provider>
