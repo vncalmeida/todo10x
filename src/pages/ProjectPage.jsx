@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '../context/TaskContext';
-import { ArrowLeft, Target, Trophy, CheckCircle, Clock, Edit2, Save, Flag, Plus, Minus, Trash2, History } from 'lucide-react';
+import { ArrowLeft, Target, Trophy, CheckCircle, Circle, Clock, Edit2, Save, Flag, Plus, Minus, Trash2, History } from 'lucide-react';
 import { useState } from 'react';
 import { StreakCalendar } from '../components/StreakCalendar';
 import { ProjectModal } from '../components/ProjectModal';
@@ -200,9 +200,12 @@ export const ProjectPage = () => {
                       <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginRight: '1rem' }}>
                         META
                       </div>
-                      <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600' }}>
+                      <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600', flex: 1 }}>
                         {goal.title}
                       </div>
+                      <button className="btn-icon" onClick={() => deleteGoal(goal.id)} style={{ color: 'var(--danger)' }} title="Excluir Meta">
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>

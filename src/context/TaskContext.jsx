@@ -295,7 +295,10 @@ export const TaskProvider = ({ children }) => {
     }));
   };
 
-  const deleteGoal = (goalId) => setGoals(prev => prev.filter(g => g.id !== goalId));
+  const deleteGoal = (goalId) => {
+    setGoals(prev => prev.filter(g => g.id !== goalId));
+    setTasks(prev => prev.filter(t => t.goalId !== goalId));
+  };
 
   const addQuote = (text) => setQuotes(prev => [...prev, { id: Date.now().toString(), text }]);
   const removeQuote = (id) => setQuotes(prev => prev.filter(q => q.id !== id));

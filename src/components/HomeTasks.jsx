@@ -18,6 +18,15 @@ export const HomeTasks = () => {
   const pendingTasks = tasks.filter(t => !t.completed);
   const completedTasks = tasks.filter(t => t.completed).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
+  const pendingGoalTasks = pendingTasks.filter(t => t.goalId);
+  const pendingStandaloneTasks = pendingTasks.filter(t => !t.goalId);
+
+  const goalGroups = pendingGoalTasks.reduce((acc, task) => {
+    if (!acc[task.goalId]) acc[task.goalId] = [];
+    acc[task.goalId].push(task);
+    return acc;
+  }, {});
+
   const handleStartEdit = (task) => {
     setEditingTaskId(task.id);
     setEditingTaskTitle(task.title);
@@ -88,6 +97,65 @@ export const HomeTasks = () => {
     ? projects.filter(p => p.status !== 'archived' && p.name.toLowerCase().includes(mentionQuery))
     : [];
 
+  const renderTask = (task) => {
+    const project = projects.find(p => p.id === task.projectId);
+    const goal = task.goalId ? goals?.find(g => g.id === task.goalId) : null;
+    return (
+      <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0, borderLeft: `3px solid ${project?.color || '#ffffff'}` }}>
+        <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
+          <Circle size={22} color="var(--text-secondary)" />
+        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
+          {editingTaskId === task.id ? (
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+              <input 
+                type="text" 
+                value={editingTaskTitle} 
+                onChange={(e) => setEditingTaskTitle(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
+                autoFocus
+                style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', flex: 1 }}
+              />
+            </div>
+          ) : (
+            <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
+          )}
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
+            {project ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--text-secondary)' }} />
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.75rem' }}>
+                  {project.name} {goal ? `- ${goal.title}` : ''}
+                </span>
+              </div>
+            ) : (
+              <span style={{ color: 'var(--text-secondary)' }}>Geral</span>
+            )}
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {!task.goalId && (
+            <button className="btn-icon" onClick={() => breakDownTask(task)} title="Transformar em Meta e quebrar em passos" style={{ color: '#fbbf24' }}>
+              <Wand2 size={18} />
+            </button>
+          )}
+          {editingTaskId === task.id ? (
+            <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
+              <Save size={18} />
+            </button>
+          ) : (
+            <button className="btn-icon" onClick={() => handleStartEdit(task)}>
+              <Edit2 size={18} />
+            </button>
+          )}
+          <button className="btn-icon" onClick={() => deleteTask(task.id)} style={{ color: 'var(--danger)' }}>
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
       
@@ -124,62 +192,29 @@ export const HomeTasks = () => {
       {pendingTasks.length === 0 ? (
         <p style={{ color: 'var(--text-secondary)', textAlign: 'center', margin: '2rem 0' }}>Nenhuma tarefa pendente! Você está livre.</p>
       ) : (
-        pendingTasks.map(task => {
-          const project = projects.find(p => p.id === task.projectId);
-          const goal = task.goalId ? goals?.find(g => g.id === task.goalId) : null;
-          return (
-            <div key={task.id} className="glass-panel task-hover" style={{ padding: '1rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0, borderLeft: `3px solid ${project?.color || '#ffffff'}` }}>
-              <button className="checkbox" onClick={() => toggleTaskComplete(task.id)}>
-                <Circle size={22} color="var(--text-secondary)" />
-              </button>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
-                {editingTaskId === task.id ? (
-                  <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
-                    <input 
-                      type="text" 
-                      value={editingTaskTitle} 
-                      onChange={(e) => setEditingTaskTitle(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(task.id)}
-                      autoFocus
-                      style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: '#fff', padding: '0.2rem 0.5rem', fontSize: '1rem', flex: 1 }}
-                    />
+        <>
+          {Object.entries(goalGroups).map(([goalId, goalTasks]) => {
+            const goal = goals?.find(g => g.id === goalId);
+            if (!goal) return null;
+            return (
+              <div key={goalId} className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--glass-border)', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginRight: '1rem' }}>
+                    META
                   </div>
-                ) : (
-                  <span style={{ fontSize: '1rem', color: '#fff' }}>{task.title}</span>
-                )}
-                <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
-                  {project ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--text-secondary)' }} />
-                      <span style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.75rem' }}>
-                        {project.name} {goal ? `- ${goal.title}` : ''}
-                      </span>
-                    </div>
-                  ) : (
-                    <span style={{ color: 'var(--text-secondary)' }}>Geral</span>
-                  )}
+                  <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600' }}>
+                    {goal.title}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  {goalTasks.map(task => renderTask(task))}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="btn-icon" onClick={() => breakDownTask(task)} title="Transformar em Meta e quebrar em passos" style={{ color: '#fbbf24' }}>
-                  <Wand2 size={18} />
-                </button>
-                {editingTaskId === task.id ? (
-                  <button className="btn-icon" onClick={() => handleSaveEdit(task.id)} style={{ color: 'var(--success)' }}>
-                    <Save size={18} />
-                  </button>
-                ) : (
-                  <button className="btn-icon" onClick={() => handleStartEdit(task)}>
-                    <Edit2 size={18} />
-                  </button>
-                )}
-                <button className="btn-icon" onClick={() => deleteTask(task.id)} style={{ color: 'var(--danger)' }}>
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          );
-        })
+            );
+          })}
+
+          {pendingStandaloneTasks.map(task => renderTask(task))}
+        </>
       )}
 
       {completedTasks.length > 0 && (
