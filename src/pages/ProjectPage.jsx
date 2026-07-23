@@ -86,16 +86,17 @@ export const ProjectPage = () => {
   const timeString = totalHours > 0 ? `${totalHours}h ${remainingMins}m` : `${remainingMins}m`;
 
   return (
-    <div className="app-container animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '2rem', paddingBottom: '4rem' }}>
-      <button className="btn-small" onClick={() => navigate('/')} style={{ marginBottom: '2rem', background: 'var(--glass-bg)' }}>
-        <ArrowLeft size={16} /> Voltar ao Início
-      </button>
+    <>
+      <div className="app-container animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '2rem', paddingBottom: '4rem' }}>
+        <button className="btn-small" onClick={() => navigate('/')} style={{ marginBottom: '2rem', background: 'var(--glass-bg)' }}>
+          <ArrowLeft size={16} /> Voltar ao Início
+        </button>
 
-      <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '3rem', border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(145deg, rgba(30,30,40,0.8), rgba(15,15,20,0.9))' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h1 className="text-gradient" style={{ fontSize: '2.5rem', margin: 0 }}>{project.name}</h1>
-            <button onClick={() => setIsEditingProject(true)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '8px' }}>
+        <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '3rem', border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(145deg, rgba(30,30,40,0.8), rgba(15,15,20,0.9))' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <h1 className="text-gradient" style={{ fontSize: '2.5rem', margin: 0 }}>{project.name}</h1>
+              <button onClick={() => setIsEditingProject(true)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '8px' }}>
               <Settings size={20} color="var(--text-secondary)" />
             </button>
           </div>
@@ -337,6 +338,8 @@ export const ProjectPage = () => {
           })}
         </div>
       )}
+      </div>
+
       {isCreatingGoal && (
         <div className="modal-overlay animate-fade-in" onClick={() => setIsCreatingGoal(false)}>
           <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
@@ -367,6 +370,6 @@ export const ProjectPage = () => {
       {isEditingProject && (
         <ProjectModal project={project} onClose={() => setIsEditingProject(false)} />
       )}
-    </div>
+    </>
   );
 };
