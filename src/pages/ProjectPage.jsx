@@ -9,7 +9,7 @@ import { Settings } from 'lucide-react';
 export const ProjectPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, toggleTaskComplete, deleteTask, editTask } = useTaskContext();
+  const { projects, tasks, victories, timeLogs, goals, updateProject, addGoal, toggleTaskComplete, deleteTask, editTask, deleteGoal } = useTaskContext();
   const [isEditingTiers, setIsEditingTiers] = useState(false);
   const [tiers, setTiers] = useState({ ok: 10, good: 30, excellent: 60 });
   
