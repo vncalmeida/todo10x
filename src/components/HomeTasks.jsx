@@ -27,6 +27,21 @@ export const HomeTasks = () => {
     return acc;
   }, {});
 
+  const mixedItems = [
+    ...Object.entries(goalGroups).map(([goalId, goalTasks]) => ({
+      type: 'goal',
+      id: goalId,
+      tasks: goalTasks,
+      sortKey: parseFloat(goalId) || 0
+    })),
+    ...pendingStandaloneTasks.map(task => ({
+      type: 'task',
+      id: task.id,
+      data: task,
+      sortKey: parseFloat(task.id) || 0
+    }))
+  ].sort((a, b) => a.sortKey - b.sortKey);
+
   const handleStartEdit = (task) => {
     setEditingTaskId(task.id);
     setEditingTaskTitle(task.title);
@@ -162,27 +177,29 @@ export const HomeTasks = () => {
         <p style={{ color: 'var(--text-secondary)', textAlign: 'center', margin: '2rem 0' }}>Nenhuma tarefa pendente! Você está livre.</p>
       ) : (
         <>
-          {Object.entries(goalGroups).map(([goalId, goalTasks]) => {
-            const goal = goals?.find(g => g.id === goalId);
-            if (!goal) return null;
-            return (
-              <div key={goalId} className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--glass-border)', marginBottom: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginRight: '1rem' }}>
-                    META
+          {mixedItems.map(item => {
+            if (item.type === 'goal') {
+              const goal = goals?.find(g => g.id === item.id);
+              if (!goal) return null;
+              return (
+                <div key={item.id} className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--glass-border)', marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginRight: '1rem' }}>
+                      META
+                    </div>
+                    <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600' }}>
+                      {goal.title}
+                    </div>
                   </div>
-                  <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600' }}>
-                    {goal.title}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {item.tasks.map(task => renderTask(task))}
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  {goalTasks.map(task => renderTask(task))}
-                </div>
-              </div>
-            );
+              );
+            } else {
+              return <div key={item.id}>{renderTask(item.data)}</div>;
+            }
           })}
-
-          {pendingStandaloneTasks.map(task => renderTask(task))}
         </>
       )}
 

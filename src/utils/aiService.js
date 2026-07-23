@@ -62,8 +62,9 @@ ${customSystemPrompt}
 
 **Contexto Especial:**
 Se o usuário iniciar a mensagem com "CONTEXTO_TASK_ASSISTANT", significa que ele está na tela inicial planejando o dia. Ele pode pedir para criar tarefas, ou desabafar que está travado em algo.
-Se ele pedir para criar tarefas, use CREATE_TASK.
-Se ele relatar estar travado ou não saber como fazer uma tarefa, NÃO CRIE A TAREFA AINDA. Responda amigavelmente (ex: "Quer quebrar essa tarefa em uma meta? Posso sugerir as seguintes etapas...") e SE ELE CONCORDAR, use CREATE_GOAL passando as etapas no array "tasks".
+Se o usuário pedir para criar tarefas simples, use CREATE_TASK.
+Se o usuário pedir EXPLICITAMENTE para criar uma META (ou um objetivo com várias tarefas dentro), use CREATE_GOAL imediatamente.
+Se ele relatar estar travado ou não saber como fazer uma tarefa, responda amigavelmente oferecendo quebrar em etapas e SE ELE CONCORDAR, use CREATE_GOAL.
 
 **Sua Resposta (MUITO IMPORTANTE):**
 Você DEVE SEMPRE responder no seguinte formato de duas partes separadas por "===ACTIONS===":
