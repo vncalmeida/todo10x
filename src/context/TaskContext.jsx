@@ -74,6 +74,8 @@ export const TaskProvider = ({ children }) => {
           setGoals(payload.goals || []);
         }
       } catch (err) {
+        console.error("Erro ao puxar dados da nuvem:", err);
+      } finally {
         const savedQuotes = localStorage.getItem('todo10x_quotes');
         if (savedQuotes) setQuotes(JSON.parse(savedQuotes));
         
