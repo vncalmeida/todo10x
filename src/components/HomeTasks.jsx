@@ -157,38 +157,7 @@ export const HomeTasks = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-      
-      <div className="new-task-container" style={{ position: 'relative', marginBottom: '1.5rem' }}>
-        <input 
-          ref={inputRef}
-          type="text" 
-          value={newTaskTitle}
-          onChange={handleInputChange}
-          onKeyDown={handleAddManualTask}
-          placeholder="Escreva a tarefa... digite @ para escolher o projeto" 
-          className="time-input"
-          style={{ width: '100%', padding: '1.2rem', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', textAlign: 'left', borderRadius: '12px', color: 'white', fontSize: '1.1rem' }}
-        />
-        {mentionQuery !== null && filteredProjects.length > 0 && (
-          <div className="glass-panel" style={{ position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '0.5rem', zIndex: 10, padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', padding: '0 0.5rem', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Projetos Sugeridos</p>
-            {filteredProjects.map(p => (
-              <button 
-                key={p.id} 
-                onClick={() => handleSelectMention(p)}
-                style={{ textAlign: 'left', padding: '0.8rem', background: 'transparent', border: 'none', color: '#fff', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.8rem', transition: 'background 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: p.color || '#fff' }} />
-                <span style={{ fontWeight: '500' }}>{p.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>      
       {pendingTasks.length === 0 ? (
         <p style={{ color: 'var(--text-secondary)', textAlign: 'center', margin: '2rem 0' }}>Nenhuma tarefa pendente! Você está livre.</p>
       ) : (

@@ -74,12 +74,7 @@ export const DailyTaskAssistant = () => {
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--accent-primary)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem' }}>
-        <Sparkles size={20} color="var(--accent-primary)" />
-        <h2 style={{ fontSize: '1rem', margin: 0, fontWeight: '500', color: 'var(--text-secondary)' }}>Cérebro IA: Organize meu dia</h2>
-      </div>
-      
+    <div style={{ marginBottom: '2rem' }}>
       <form onSubmit={handleSubmit} style={{ position: 'relative' }}>
         <textarea
           ref={textareaRef}
@@ -88,9 +83,9 @@ export const DailyTaskAssistant = () => {
             width: '100%', 
             padding: '1.2rem 3.5rem 1.2rem 1.2rem', 
             borderRadius: '12px', 
-            background: 'rgba(0,0,0,0.3)', 
+            background: 'rgba(255,255,255,0.03)', 
             color: '#fff', 
-            border: '1px solid var(--glass-border)', 
+            border: '1px solid rgba(255,255,255,0.1)', 
             fontSize: '1rem',
             resize: 'none',
             overflow: 'hidden',
