@@ -6,8 +6,10 @@ import { StreakCalendar } from '../components/StreakCalendar';
 import { HoursChart } from '../components/HoursChart';
 import { MoodTracker } from '../components/MoodTracker';
 import { ChatPanel } from '../components/ChatPanel';
+import { ArrowRight, Trophy, Sparkles, Wand2 } from 'lucide-react';
 import { Pomodoro } from '../components/Pomodoro';
 import { HomeTasks } from '../components/HomeTasks';
+import { DailyTaskAssistant } from '../components/DailyTaskAssistant';
 
 export const Home = () => {
   const { projects, quotes } = useTaskContext();
@@ -43,6 +45,7 @@ export const Home = () => {
           <div className="left-column">
             
             <section className="tasks-section" style={{ marginBottom: '2.5rem' }}>
+              <DailyTaskAssistant />
               <HomeTasks />
             </section>
 

@@ -8,7 +8,7 @@ export const DailyTaskAssistant = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [assistantMessage, setAssistantMessage] = useState('');
   const { projects, tasks, goals, handleAIInput } = useTaskContext();
-  const inputRef = useRef(null);
+  const textareaRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export const DailyTaskAssistant = () => {
     setAssistantMessage('');
 
     // Prepend a specific instruction to context
-    const contextualText = `CONTEXTO_TASK_ASSISTANT: O usuário está na tela inicial e digitou no assistente de planejamento diário. Seu objetivo é ajudar a transformar a intenção do usuário em Tarefas (CREATE_TASK) ou sugerir quebrar a tarefa complexa em Metas (CREATE_GOAL). Responda de forma extremamente curta e focada (máx 2 linhas). Mensagem do usuário: "${userText}"`;
+    const contextualText = `O usuário está na tela inicial e digitou no assistente de planejamento diário (entrada por voz ou texto longo). Seu objetivo é organizar esse pensamento em Tarefas (CREATE_TASK) ou sugerir quebrar a tarefa complexa em Metas (CREATE_GOAL), identificando corretamente o projeto. Responda de forma extremamente curta e focada (máx 2 a 3 linhas), e execute as ações no JSON. Mensagem do usuário: "${userText}"`;
 
     try {
       const response = await processAIInput(contextualText, projects, [], tasks, goals);
@@ -54,6 +54,22 @@ export const DailyTaskAssistant = () => {
       setAssistantMessage("Desculpe, tive um problema ao processar. Tente novamente.");
     } finally {
       setIsProcessing(false);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    }
+  };
+
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
     }
   };
 
@@ -61,18 +77,31 @@ export const DailyTaskAssistant = () => {
     <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--accent-primary)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem' }}>
         <Sparkles size={20} color="var(--accent-primary)" />
-        <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Quais as coisas mais importantes você deveria fazer hoje?</h2>
+        <h2 style={{ fontSize: '1rem', margin: 0, fontWeight: '500', color: 'var(--text-secondary)' }}>Cérebro IA: Organize meu dia</h2>
       </div>
       
       <form onSubmit={handleSubmit} style={{ position: 'relative' }}>
-        <input
-          ref={inputRef}
-          type="text"
+        <textarea
+          ref={textareaRef}
           className="chat-input"
-          style={{ width: '100%', padding: '1rem 3rem 1rem 1rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '1rem' }}
-          placeholder="Ex: Quero fazer o relatório e estudar inglês. Ou: Preciso fazer o TCC mas tô travado..."
+          style={{ 
+            width: '100%', 
+            padding: '1.2rem 3.5rem 1.2rem 1.2rem', 
+            borderRadius: '12px', 
+            background: 'rgba(0,0,0,0.3)', 
+            color: '#fff', 
+            border: '1px solid var(--glass-border)', 
+            fontSize: '1rem',
+            resize: 'none',
+            overflow: 'hidden',
+            minHeight: '60px',
+            lineHeight: '1.5'
+          }}
+          rows={1}
+          placeholder="Fale ou digite tudo o que precisa fazer... a IA vai organizar para você."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInput}
+          onKeyDown={handleKeyDown}
           disabled={isProcessing}
         />
         <button 
